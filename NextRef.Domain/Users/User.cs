@@ -16,8 +16,8 @@ public class User
         => new(id, userName, email);
 
 
-    public static User Create(string userName, string email)
-        => new(Guid.NewGuid(), userName, email);
+    public static User CreateFromAppUser(Guid id, string userName, string email)
+        => new(id, userName, email);
 
     public void Update(string userName, string email)
     {

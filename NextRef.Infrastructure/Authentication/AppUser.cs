@@ -4,5 +4,5 @@ using NextRef.Infrastructure.DataAccess.Entities;
 namespace NextRef.Infrastructure.Authentication;
 public class AppUser : IdentityUser<Guid>
 {
-    public UserEntity? Profile { get; set; }
+    public UserEntity? UserEntity { get; set; }
 }
