@@ -8,6 +8,7 @@ using NextRef.Infrastructure.DataAccess.Repositories;
 using NextRef.Infrastructure.Authentication;
 using NextRef.Domain.Contents.Repositories;
 using NextRef.Domain.UserCollections.Repositories;
+using NextRef.Application.Users.Services;
 
 namespace NextRef.Infrastructure;
 
@@ -38,6 +39,12 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IUserCollectionRepository, UserCollectionRepository>();
         services.AddScoped<IUserCollectionItemRepository, UserCollectionItemRepository>();
+        services.AddScoped<IContributionRepository, ContributionRepository>();
+        services.AddScoped<IContributorRepository, ContributorRepository>();
+        services.AddScoped<IContentMentionRepository,ContentMentionRepository>();
+
+        services.AddScoped<IUserAuthService, UserAuthService>();
+        services.AddScoped<ITokenService, TokenService>();
 
         return services;
     }

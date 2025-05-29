@@ -1,72 +1,75 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Moq;
+﻿using Moq;
 using NextRef.Application.Users.Commands.RegisterUser;
 using NextRef.Domain.Users;
-using NextRef.Infrastructure.Authentication;
-using FluentAssertions;
+using NextRef.Application.Users.Models;
+using NextRef.Application.Users.Services;
+using NextRef.Domain.Core;
 
 namespace NextRef.Application.Tests.Handlers.Users;
 public class RegisterUserHandlerTests
 {
-    private readonly Mock<UserManager<AppUser>> _userManagerMock;
-    private readonly Mock<IUserRepository> _userRepositoryMock;
+    private readonly Mock<IUserRepository> _userRepositoryMock = new();
+    private readonly Mock<IUserAuthService> _userAuthServiceMock = new();
+
     private readonly RegisterUserCommandHandler _handler;
 
     public RegisterUserHandlerTests()
     {
-        _userManagerMock = new Mock<UserManager<AppUser>>(
-            Mock.Of<IUserStore<AppUser>>(), null, null, null, null, null, null, null, null);
-
-        _userRepositoryMock = new Mock<IUserRepository>();
-
-        _handler = new RegisterUserCommandHandler(_userManagerMock.Object, _userRepositoryMock.Object);
+        _handler = new RegisterUserCommandHandler(_userRepositoryMock.Object, _userAuthServiceMock.Object);
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnTrue_WhenUserCreatedSuccessfully()
+    public async Task Handle_ShouldRegisterUserAndReturnToken_WhenInputIsValid()
     {
         // Arrange
-        var command = new RegisterUserCommand("user1", "user1@example.com", "Password123!");
+        var command = new RegisterUserCommand("user1", "user1@example.com", "SecurePassword!");
 
-        _userManagerMock
-            .Setup(um => um.CreateAsync(It.IsAny<AppUser>(), command.Password))
-            .ReturnsAsync(IdentityResult.Success)
-            .Callback<AppUser, string>((user, pass) =>
-            {
-                user.Id = Guid.NewGuid();
-            });
+        var appUserResult = new AppUserDto(Guid.NewGuid(), "user1", "user1@example.com");
+        var token = "jwt.token.here";
 
-        _userRepositoryMock
-            .Setup(repo => repo.AddAsync(It.IsAny<User>()))
-            .Returns(Task.CompletedTask);
+        _userAuthServiceMock
+            .Setup(x => x.CreateUserAsync(command.UserName, command.Email, command.Password))
+            .ReturnsAsync(appUserResult);
+
+        _userAuthServiceMock
+            .Setup(x => x.GenerateTokenForUserAsync(appUserResult.Username))
+            .ReturnsAsync(token);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.Should().BeTrue();
+        Assert.Equal(token, result);
 
-        _userManagerMock.Verify(um => um.CreateAsync(It.IsAny<AppUser>(), command.Password), Times.Once);
-        _userRepositoryMock.Verify(repo => repo.AddAsync(It.Is<User>(u => u.UserName == command.UserName && u.Email == command.Email)), Times.Once);
+        _userAuthServiceMock.Verify(x => x.AddToRoleAsync(appUserResult.Id.ToString(), UserRoles.User), Times.Once);
+        _userRepositoryMock.Verify(x => x.AddAsync(It.Is<User>(u =>
+            u.Id == appUserResult.Id && u.UserName == appUserResult.Username && u.Email == appUserResult.Email)), Times.Once);
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnFalse_WhenUserCreationFails()
+    public async Task Handle_ShouldAssignAdminRole_WhenUsernameIsRedSky()
     {
         // Arrange
-        var command = new RegisterUserCommand("user2", "user2@example.com", "Password123!");
+        var command = new RegisterUserCommand("RedSky", "admin@example.com", "StrongPassword!");
 
-        _userManagerMock
-            .Setup(um => um.CreateAsync(It.IsAny<AppUser>(), command.Password))
-            .ReturnsAsync(IdentityResult.Failed(new IdentityError { Description = "Error" }));
+        var appUserResult = new AppUserDto(Guid.NewGuid(), "RedSky", "admin@example.com");
+        var token = "admin.jwt.token";
+
+        _userAuthServiceMock
+            .Setup(x => x.CreateUserAsync(command.UserName, command.Email, command.Password))
+            .ReturnsAsync(appUserResult);
+
+        _userAuthServiceMock
+            .Setup(x => x.GenerateTokenForUserAsync(appUserResult.Username))
+            .ReturnsAsync(token);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.Should().BeFalse();
+        Assert.Equal(token, result);
 
-        _userManagerMock.Verify(um => um.CreateAsync(It.IsAny<AppUser>(), command.Password), Times.Once);
-        _userRepositoryMock.Verify(repo => repo.AddAsync(It.IsAny<User>()), Times.Never);
+        _userAuthServiceMock.Verify(x => x.AddToRoleAsync(appUserResult.Id.ToString(), UserRoles.Admin), Times.Once);
+        _userRepositoryMock.Verify(x => x.AddAsync(It.IsAny<User>()), Times.Once);
     }
 }

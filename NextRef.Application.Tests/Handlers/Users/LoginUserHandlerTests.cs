@@ -1,87 +1,60 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Moq;
 using NextRef.Application.Users.Commands.LoginUser;
-using NextRef.Infrastructure.Authentication;
 using NextRef.Application.Users.Services;
 
 namespace NextRef.Application.Tests.Handlers.Users;
 public class LoginUserHandlerTests
 {
-    private readonly Mock<ISignInService> _signInServiceMock;
-    private readonly Mock<ITokenService> _tokenServiceMock;
-    private readonly Mock<UserManager<AppUser>> _userManagerMock;
+    private readonly Mock<IUserAuthService> _userAuthServiceMock;
     private readonly LoginUserCommandHandler _handler;
 
     public LoginUserHandlerTests()
     {
-        _signInServiceMock = new Mock<ISignInService>();
-        _tokenServiceMock = new Mock<ITokenService>();
+        _userAuthServiceMock = new Mock<IUserAuthService>();
 
-        var userStoreMock = new Mock<IUserStore<AppUser>>();
-        _userManagerMock = new Mock<UserManager<AppUser>>(userStoreMock.Object, null, null, null, null, null, null, null, null);
-
-        _handler = new LoginUserCommandHandler(_signInServiceMock.Object, _userManagerMock.Object, _tokenServiceMock.Object);
+        _handler = new LoginUserCommandHandler(_userAuthServiceMock.Object);
     }
 
-    [Fact]
-    public async Task Handle_UserNotFound_ThrowsUnauthorizedAccessException()
-    {
-        // Arrange
-        _userManagerMock.Setup(x => x.FindByNameAsync(It.IsAny<string>()))
-            .ReturnsAsync((AppUser?)null);
-
-        var command = new LoginUserCommand("unknown", "pwd");
-
-        // Act & Assert
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
-            _handler.Handle(command, CancellationToken.None));
-    }
 
     [Fact]
-    public async Task Handle_InvalidPassword_ThrowsUnauthorizedAccessException()
+    public async Task Handle_ShouldReturnToken_WhenLoginSucceeds()
     {
         // Arrange
-        var user = new AppUser { UserName = "testuser" };
+        var command = new LoginUserCommand("user1","pass1");
+        var fakeToken = "token123";
 
-        _userManagerMock.Setup(x => x.FindByNameAsync("testuser"))
-            .ReturnsAsync(user);
-
-        _signInServiceMock.Setup(x => x.CheckPasswordSignInAsync(user, "wrongpwd", false))
-            .ReturnsAsync(SignInResult.Failed);
-
-        var command = new LoginUserCommand("testuser", "wrongpwd");
-
-        // Act & Assert
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
-            _handler.Handle(command, CancellationToken.None));
-    }
-
-    [Fact]
-    public async Task Handle_ValidCredentials_ReturnsToken()
-    {
-        // Arrange
-        var user = new AppUser { Id = Guid.NewGuid(), UserName = "testuser" };
-
-        _userManagerMock.Setup(x => x.FindByNameAsync("testuser"))
-            .ReturnsAsync(user);
-
-        _signInServiceMock.Setup(x => x.CheckPasswordSignInAsync(user, "correctpwd", false))
+        _userAuthServiceMock
+            .Setup(s => s.CheckPasswordSignInAsync(command.UserName, command.Password, false))
             .ReturnsAsync(SignInResult.Success);
 
-        _userManagerMock.Setup(x => x.GetRolesAsync(user))
-            .ReturnsAsync(new List<string> { "User" });
-
-        _tokenServiceMock.Setup(x => x.GenerateToken(user.Id.ToString(), "testuser", It.IsAny<IList<string>>()))
-            .Returns("fake-jwt-token");
-
-        var command = new LoginUserCommand("testuser", "correctpwd");
+        _userAuthServiceMock
+            .Setup(s => s.GenerateTokenForUserAsync(command.UserName))
+            .ReturnsAsync(fakeToken);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.Equal("fake-jwt-token", result);
+        Assert.Equal(fakeToken, result);
+        _userAuthServiceMock.Verify(s => s.CheckPasswordSignInAsync(command.UserName, command.Password, false), Times.Once);
+        _userAuthServiceMock.Verify(s => s.GenerateTokenForUserAsync(command.UserName), Times.Once);
     }
 
+    [Fact]
+    public async Task Handle_ShouldThrowUnauthorizedAccessException_WhenLoginFails()
+    {
+        // Arrange
+        var command = new LoginUserCommand("user1", "wrongpass");
+
+        _userAuthServiceMock
+            .Setup(s => s.CheckPasswordSignInAsync(command.UserName, command.Password, false))
+            .ReturnsAsync(SignInResult.Failed);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _handler.Handle(command, CancellationToken.None));
+
+        _userAuthServiceMock.Verify(s => s.CheckPasswordSignInAsync(command.UserName, command.Password, false), Times.Once);
+        _userAuthServiceMock.Verify(s => s.GenerateTokenForUserAsync(It.IsAny<string>()), Times.Never);
+    }
 }

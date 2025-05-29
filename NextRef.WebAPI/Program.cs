@@ -22,6 +22,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddSwaggerWithJwt();
 builder.Services.AddAuthorizationPolicies();
+builder.Services.AddCustomCors();
 
 builder.Services.AddControllers(); 
 
@@ -44,6 +45,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseHttpsRedirection();
+app.UseCustomCors();
 
 app.MapControllers();
 

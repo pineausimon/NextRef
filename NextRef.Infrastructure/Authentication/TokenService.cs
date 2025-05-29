@@ -4,7 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace NextRef.Application.Users.Services;
+namespace NextRef.Infrastructure.Authentication;
 public interface ITokenService
 {
     string GenerateToken(string userId, string userName, IList<string> roles);

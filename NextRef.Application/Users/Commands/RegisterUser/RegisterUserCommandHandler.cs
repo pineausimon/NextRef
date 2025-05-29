@@ -1,45 +1,37 @@
 ﻿using MediatR;
 using NextRef.Domain.Users;
-using Microsoft.AspNetCore.Identity;
-using NextRef.Infrastructure.Authentication;
+using NextRef.Application.Users.Services;
 using NextRef.Domain.Core;
 
 namespace NextRef.Application.Users.Commands.RegisterUser;
-public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, bool>
+public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, string?>
 {
-    private readonly UserManager<AppUser> _userManager;
     private readonly IUserRepository _userRepository;
+    private readonly IUserAuthService _userAuthService;
 
-    public RegisterUserCommandHandler(UserManager<AppUser> userManager, IUserRepository userRepository)
+    public RegisterUserCommandHandler(IUserRepository userRepository, IUserAuthService userAuthService)
     {
-        _userManager = userManager;
         _userRepository = userRepository;
+        _userAuthService = userAuthService;
     }
 
-    public async Task<bool> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+    public async Task<string?> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
-        var appUser = new AppUser
-        {
-            UserName = request.UserName,
-            Email = request.Email
-        };
-
-        var result = await _userManager.CreateAsync(appUser, request.Password);
-        if (!result.Succeeded)
-            return false;
+        var result = await _userAuthService.CreateUserAsync(request.UserName, request.Email, request.Password);
 
         if (request.UserName == "RedSky")
         {
-            await _userManager.AddToRoleAsync(appUser, UserRoles.Admin);
+            await _userAuthService.AddToRoleAsync(result.Id.ToString(), UserRoles.Admin);
         }
         else
         {
-            await _userManager.AddToRoleAsync(appUser, UserRoles.User);
+            await _userAuthService.AddToRoleAsync(result.Id.ToString(), UserRoles.User);
         }
 
-        var domainUser = User.CreateFromAppUser(appUser.Id, appUser.UserName, appUser.Email);
-        await _userRepository.AddAsync(domainUser); 
+        var domainUser = User.CreateFromAppUser(result.Id, result.Username, result.Email);
+        await _userRepository.AddAsync(domainUser);
 
-        return true;
+        var token = await _userAuthService.GenerateTokenForUserAsync(domainUser.UserName);
+        return token;
     }
 }

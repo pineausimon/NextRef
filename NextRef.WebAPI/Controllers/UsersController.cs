@@ -22,10 +22,11 @@ public class UsersController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterUserCommand command)
     {
-        var success = await _mediator.Send(command);
-        if (!success)
+        var token = await _mediator.Send(command);
+        if (token == null)
             return BadRequest("Registration failed");
-        return Ok("User registered");
+
+        return Ok(new { Token = token });
     }
 
     [AllowAnonymous]

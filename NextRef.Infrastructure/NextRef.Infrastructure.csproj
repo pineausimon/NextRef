@@ -9,6 +9,7 @@
     <ItemGroup>
       <PackageReference Include="Dapper" Version="2.1.66" />
       <PackageReference Include="dbup-sqlserver" Version="6.0.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.5" />
       <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.1" />
       <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.5" />
       <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.2" />
@@ -26,6 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\NextRef.Application\NextRef.Application.csproj" />
       <ProjectReference Include="..\NextRef.Domain\NextRef.Domain.csproj" />
     </ItemGroup>
 
