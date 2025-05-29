@@ -17,7 +17,7 @@ public class UserCollectionRepository : IUserCollectionRepository
 
     public async Task<UserCollection?> GetByIdAsync(Guid id)
     {
-        const string query = "SELECT * FROM UserCollections WHERE Id = @Id";
+        const string query = "SELECT * FROM Core.UserCollections WHERE Id = @Id";
 
         using var connection = _context.CreateConnection();
         var entity = await connection.QuerySingleOrDefaultAsync<UserCollectionEntity>(query, new { Id = id });
@@ -26,7 +26,7 @@ public class UserCollectionRepository : IUserCollectionRepository
 
     public async Task<IEnumerable<UserCollection>> GetByUserIdAsync(Guid userId)
     {
-        const string query = "SELECT * FROM UserCollections WHERE UserId = @UserId";
+        const string query = "SELECT * FROM Core.UserCollections WHERE UserId = @UserId";
 
         using var connection = _context.CreateConnection();
         var entities = await connection.QueryAsync<UserCollectionEntity>(query, new { UserId = userId });
@@ -36,7 +36,7 @@ public class UserCollectionRepository : IUserCollectionRepository
     public async Task AddAsync(UserCollection collection)
     {
         const string query = @"
-            INSERT INTO UserCollections (Id, UserId, Name, CreatedAt, UpdatedAt)
+            INSERT INTO Core.UserCollections (Id, UserId, Name, CreatedAt, UpdatedAt)
             VALUES (@Id, @UserId, @Name, @CreatedAt, @UpdatedAt)";
 
         using var connection = _context.CreateConnection();
@@ -56,7 +56,7 @@ public class UserCollectionRepository : IUserCollectionRepository
     public async Task UpdateAsync(UserCollection collection)
     {
         const string query = @"
-            UPDATE UserCollections 
+            UPDATE Core.UserCollections 
             SET Name = @Name, UpdatedAt = @UpdatedAt
             WHERE Id = @Id";
 
@@ -75,7 +75,7 @@ public class UserCollectionRepository : IUserCollectionRepository
 
     public async Task DeleteAsync(Guid id)
     {
-        const string query = "DELETE FROM UserCollections WHERE Id = @Id";
+        const string query = "DELETE FROM Core.UserCollections WHERE Id = @Id";
 
         using var connection = _context.CreateConnection();
         await connection.ExecuteAsync(query, new { Id = id });

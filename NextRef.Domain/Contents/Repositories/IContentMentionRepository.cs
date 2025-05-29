@@ -3,8 +3,10 @@
 namespace NextRef.Domain.Contents.Repositories;
 public interface IContentMentionRepository
 {
-    Task<IEnumerable<ContentMention>> GetByContributorIdAsync(Guid contributorId);
-    Task<IEnumerable<ContentMention>> GetByContentIdAsync(Guid contentId);
+    Task<IEnumerable<ContentMention>> GetBySourceContentIdAsync(Guid contentId);
+    Task<IEnumerable<ContentMention>> GetByTargetContentIdAsync(Guid contentId);
+    Task<ContentMention?> GetByIdAsync(Guid id);
     Task AddAsync(ContentMention mention);
-    Task DeleteAsync(Guid contentId, Guid contributorId);
+    Task UpdateAsync(ContentMention mention);
+    Task DeleteAsync(Guid contentId);
 }

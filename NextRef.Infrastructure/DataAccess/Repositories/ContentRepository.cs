@@ -17,7 +17,7 @@ public class ContentRepository : IContentRepository
 
     public async Task<Content?> GetByIdAsync(Guid id)
     {
-        const string query = "SELECT * FROM Content WHERE Id = @Id";
+        const string query = "SELECT * FROM Core.Contents WHERE Id = @Id";
 
         using var connection = _context.CreateConnection();
         var entity = await connection.QuerySingleOrDefaultAsync<ContentEntity>(query, new { Id = id });
@@ -31,7 +31,7 @@ public class ContentRepository : IContentRepository
     public async Task AddAsync(Content content)
     {
         const string query = @"
-            INSERT INTO Content (Id, Title, Type, Description, PublishedAt, CreatedAt, UpdatedAt)
+            INSERT INTO Core.Contents (Id, Title, Type, Description, PublishedAt, CreatedAt, UpdatedAt)
             VALUES (@Id, @Title, @Type, @Description, @PublishedAt, @CreatedAt, @UpdatedAt)";
 
         using var connection = _context.CreateConnection();
@@ -53,7 +53,7 @@ public class ContentRepository : IContentRepository
     public async Task UpdateAsync(Content content)
     {
         const string query = @"
-            UPDATE Content SET
+            UPDATE Core.Contents SET
                 Title = @Title,
                 Type = @Type,
                 Description = @Description,
@@ -78,7 +78,7 @@ public class ContentRepository : IContentRepository
 
     public async Task DeleteAsync(Guid id)
     {
-        const string query = "DELETE FROM Content WHERE Id = @Id";
+        const string query = "DELETE FROM Core.Contents WHERE Id = @Id";
 
         using var connection = _context.CreateConnection();
         await connection.ExecuteAsync(query, new { Id = id });

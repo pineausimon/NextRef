@@ -17,7 +17,7 @@ public class UserRepository : IUserRepository
     public async Task<User?> GetByIdAsync(Guid id)
     {
         using var connection = _context.CreateConnection();
-        const string query = "SELECT Id, UserName, Email FROM Users WHERE Id = @Id";
+        const string query = "SELECT Id, UserName, Email FROM Core.Users WHERE Id = @Id";
         var entity = await connection.QuerySingleOrDefaultAsync<UserEntity>(query, new { Id = id });
 
         return UserMapper.ToDomain(entity);
@@ -26,7 +26,7 @@ public class UserRepository : IUserRepository
     public async Task AddAsync(User user)
     {
         const string query = @"
-            INSERT INTO USERS (Id, UserName, Email, CreatedAt, UpdatedAt)
+            INSERT INTO Core.Users (Id, UserName, Email, CreatedAt, UpdatedAt)
             VALUES (@Id, @UserName, @Email, @CreatedAt, @UpdatedAt)";
 
         using var connection = _context.CreateConnection();
@@ -45,7 +45,7 @@ public class UserRepository : IUserRepository
 
     public async Task UpdateAsync(User user)
     {
-        const string query = "UPDATE Users SET Email = @Email, UserName = @UserName, UpdatedAt = @UpdatedAt WHERE Id = @Id";
+        const string query = "UPDATE Core.Users SET Email = @Email, UserName = @UserName, UpdatedAt = @UpdatedAt WHERE Id = @Id";
         using var connection = _context.CreateConnection();
 
         var updated = await connection.ExecuteAsync(query, new
@@ -62,7 +62,7 @@ public class UserRepository : IUserRepository
 
     public async Task DeleteAsync(Guid id)
     {
-        const string query = "DELETE FROM User WHERE Id = @Id";
+        const string query = "DELETE FROM Core.Users WHERE Id = @Id";
 
         using var connection = _context.CreateConnection();
         await connection.ExecuteAsync(query, new { Id = id });
