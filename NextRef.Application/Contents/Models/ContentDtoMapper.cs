@@ -1,4 +1,4 @@
-﻿using NextRef.Domain.Contents;
+﻿using NextRef.Domain.Contents.Models;
 
 namespace NextRef.Application.Contents.Models;
 public static class ContentMapper

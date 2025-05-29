@@ -1,8 +1,6 @@
 ﻿namespace NextRef.Infrastructure.DataAccess.Entities;
-public class UserCollectionItemEntity : BaseEntity
+public class UserCollectionEntity : BaseEntity
 {
-    public Guid CollectionId { get; set; }
-    public Guid ContentId { get; set; }
-    public string Status { get; set; } = string.Empty;
-    public DateTime AddedAt { get; set; }
+    public Guid UserId { get; set; }
+    public string Name { get; set; }
 }

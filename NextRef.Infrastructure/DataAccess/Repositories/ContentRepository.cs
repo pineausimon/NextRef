@@ -1,5 +1,6 @@
 ﻿using Dapper;
-using NextRef.Domain.Contents;
+using NextRef.Domain.Contents.Models;
+using NextRef.Domain.Contents.Repositories;
 using NextRef.Infrastructure.DataAccess.Configuration;
 using NextRef.Infrastructure.DataAccess.Entities;
 using NextRef.Infrastructure.DataAccess.Mappers;
@@ -16,10 +17,10 @@ public class ContentRepository : IContentRepository
 
     public async Task<Content?> GetByIdAsync(Guid id)
     {
-        var sql = "SELECT * FROM Content WHERE Id = @Id";
+        const string query = "SELECT * FROM Content WHERE Id = @Id";
 
         using var connection = _context.CreateConnection();
-        var entity = await connection.QuerySingleOrDefaultAsync<ContentEntity>(sql, new { Id = id });
+        var entity = await connection.QuerySingleOrDefaultAsync<ContentEntity>(query, new { Id = id });
 
         if (entity == null)
             return null;
@@ -29,12 +30,12 @@ public class ContentRepository : IContentRepository
 
     public async Task AddAsync(Content content)
     {
-        var sql = @"
+        const string query = @"
             INSERT INTO Content (Id, Title, Type, Description, PublishedAt, CreatedAt, UpdatedAt)
             VALUES (@Id, @Title, @Type, @Description, @PublishedAt, @CreatedAt, @UpdatedAt)";
 
         using var connection = _context.CreateConnection();
-        var added = await connection.ExecuteAsync(sql, new
+        var added = await connection.ExecuteAsync(query, new
         {
             content.Id,
             content.Title,
@@ -51,7 +52,7 @@ public class ContentRepository : IContentRepository
 
     public async Task UpdateAsync(Content content)
     {
-        var sql = @"
+        const string query = @"
             UPDATE Content SET
                 Title = @Title,
                 Type = @Type,
@@ -61,7 +62,7 @@ public class ContentRepository : IContentRepository
             WHERE Id = @Id";
 
         using var connection = _context.CreateConnection();
-        var updated = await connection.ExecuteAsync(sql, new
+        var updated = await connection.ExecuteAsync(query, new
         {
             content.Title,
             content.Type,
@@ -77,9 +78,9 @@ public class ContentRepository : IContentRepository
 
     public async Task DeleteAsync(Guid id)
     {
-        var sql = "DELETE FROM Content WHERE Id = @Id";
+        const string query = "DELETE FROM Content WHERE Id = @Id";
 
         using var connection = _context.CreateConnection();
-        await connection.ExecuteAsync(sql, new { Id = id });
+        await connection.ExecuteAsync(query, new { Id = id });
     }
 }

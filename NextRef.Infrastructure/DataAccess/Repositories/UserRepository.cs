@@ -17,20 +17,20 @@ public class UserRepository : IUserRepository
     public async Task<User?> GetByIdAsync(Guid id)
     {
         using var connection = _context.CreateConnection();
-        var sql = "SELECT Id, UserName, Email FROM Users WHERE Id = @Id";
-        var entity = await connection.QuerySingleOrDefaultAsync<UserEntity>(sql, new { Id = id });
+        const string query = "SELECT Id, UserName, Email FROM Users WHERE Id = @Id";
+        var entity = await connection.QuerySingleOrDefaultAsync<UserEntity>(query, new { Id = id });
 
         return UserMapper.ToDomain(entity);
     }
 
     public async Task AddAsync(User user)
     {
-        var sql = @"
+        const string query = @"
             INSERT INTO USERS (Id, UserName, Email, CreatedAt, UpdatedAt)
             VALUES (@Id, @UserName, @Email, @CreatedAt, @UpdatedAt)";
 
         using var connection = _context.CreateConnection();
-        var added = await connection.ExecuteAsync(sql, new
+        var added = await connection.ExecuteAsync(query, new
         {
             user.Id,
             user.UserName,
@@ -45,10 +45,10 @@ public class UserRepository : IUserRepository
 
     public async Task UpdateAsync(User user)
     {
-        var sql = "UPDATE Users SET Email = @Email, UserName = @UserName, UpdatedAt = @UpdatedAt WHERE Id = @Id";
+        const string query = "UPDATE Users SET Email = @Email, UserName = @UserName, UpdatedAt = @UpdatedAt WHERE Id = @Id";
         using var connection = _context.CreateConnection();
 
-        var updated = await connection.ExecuteAsync(sql, new
+        var updated = await connection.ExecuteAsync(query, new
         {
             user.UserName,
             user.Email,
@@ -62,9 +62,9 @@ public class UserRepository : IUserRepository
 
     public async Task DeleteAsync(Guid id)
     {
-        var sql = "DELETE FROM User WHERE Id = @Id";
+        const string query = "DELETE FROM User WHERE Id = @Id";
 
         using var connection = _context.CreateConnection();
-        await connection.ExecuteAsync(sql, new { Id = id });
+        await connection.ExecuteAsync(query, new { Id = id });
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace NextRef.Domain.Contents;
+﻿namespace NextRef.Domain.Contents.Models;
 
 public class Content
 {

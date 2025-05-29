@@ -2,11 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
-using NextRef.Domain.Contents;
 using NextRef.Domain.Users;
 using NextRef.Infrastructure.DataAccess.Configuration;
 using NextRef.Infrastructure.DataAccess.Repositories;
 using NextRef.Infrastructure.Authentication;
+using NextRef.Domain.Contents.Repositories;
+using NextRef.Domain.UserCollections.Repositories;
 
 namespace NextRef.Infrastructure;
 
@@ -35,6 +36,8 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IContentRepository, ContentRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IUserCollectionRepository, UserCollectionRepository>();
+        services.AddScoped<IUserCollectionItemRepository, UserCollectionItemRepository>();
 
         return services;
     }

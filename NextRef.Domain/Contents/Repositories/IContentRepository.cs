@@ -1,4 +1,6 @@
-﻿namespace NextRef.Domain.Contents;
+﻿using NextRef.Domain.Contents.Models;
+
+namespace NextRef.Domain.Contents.Repositories;
 public interface IContentRepository
 {
     Task<Content?> GetByIdAsync(Guid id);

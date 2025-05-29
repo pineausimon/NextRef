@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using NextRef.Domain.Contents;
+using NextRef.Domain.Contents.Repositories;
 
 namespace NextRef.Application.Contents.Commands.DeleteContent;
 public class DeleteContentHandler : IRequestHandler<DeleteContentCommand>

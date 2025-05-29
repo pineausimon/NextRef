@@ -1,5 +1,6 @@
 ﻿using MediatR;
-using NextRef.Domain.Contents;
+using NextRef.Domain.Contents.Models;
+using NextRef.Domain.Contents.Repositories;
 
 namespace NextRef.Application.Contents.Commands.CreateContent;
 

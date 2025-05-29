@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using NextRef.Application.Contents.Models;
-using NextRef.Domain.Contents;
+using NextRef.Domain.Contents.Repositories;
 
 namespace NextRef.Application.Contents.Queries.GetContentById;
 public class GetContentByIdHandler : IRequestHandler<GetContentByIdQuery, ContentDto?>
