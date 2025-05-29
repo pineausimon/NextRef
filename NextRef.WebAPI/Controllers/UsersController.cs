@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NextRef.Application.Users.Commands.LoginUser;
 using NextRef.Application.Users.Commands.RegisterUser;
@@ -17,6 +18,7 @@ public class UsersController : ControllerBase
         _mediator = mediator;
     }
 
+    [AllowAnonymous]
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterUserCommand command)
     {
@@ -26,15 +28,18 @@ public class UsersController : ControllerBase
         return Ok("User registered");
     }
 
+    [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginUserCommand command)
     {
         var token = await _mediator.Send(command);
         if (token == null)
-            return Unauthorized();
+            return Unauthorized(); 
+        
         return Ok(new { Token = token });
     }
 
+    [Authorize(Policy = "UserOrAdmin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetUser(Guid id)
     {
@@ -44,6 +49,7 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
+    [Authorize(Policy = "UserOrAdmin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUser(Guid id, UpdateUserCommand command)
     {

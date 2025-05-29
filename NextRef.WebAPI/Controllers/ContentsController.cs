@@ -1,10 +1,11 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NextRef.Application.Contents.Commands.CreateContent;
 using NextRef.Application.Contents.Commands.DeleteContent;
 using NextRef.Application.Contents.Commands.UpdateContent;
 using NextRef.Application.Contents.Queries.GetContentById;
+using NextRef.Domain.Core;
 
 namespace NextRef.WebAPI.Controllers;
 
@@ -19,6 +20,7 @@ public class ContentsController : ControllerBase
         _mediator = mediator;
     }
 
+    [AllowAnonymous]
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(Guid id)
     {
@@ -27,13 +29,15 @@ public class ContentsController : ControllerBase
         return Ok(content);
     }
 
+    [Authorize(Policy = "UserOrAdmin")]
     [HttpPost]
     public async Task<IActionResult> Create(CreateContentCommand command)
     {
         var newId = await _mediator.Send(command);
-        return CreatedAtAction(nameof(Get), new { id = newId }, null);
+        return CreatedAtAction(nameof(Get), new { id = newId }, new { id = newId });
     }
 
+    [Authorize(Policy = "UserOrAdmin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, UpdateContentCommand command)
     {
@@ -50,6 +54,7 @@ public class ContentsController : ControllerBase
         return NoContent();
     }
 
+    [Authorize(Roles = UserRoles.Admin)]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {

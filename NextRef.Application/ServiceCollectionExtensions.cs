@@ -10,7 +10,8 @@ public static class ServiceCollectionExtensions
         services.AddMediatR(cfg =>
             cfg.RegisterServicesFromAssemblyContaining<CreateContentCommand>());
 
-        services.AddTransient<ISignInService, SignInService>();
+        services.AddScoped<ISignInService, SignInService>();
+        services.AddScoped<ITokenService, TokenService>();
 
         return services;
     }
