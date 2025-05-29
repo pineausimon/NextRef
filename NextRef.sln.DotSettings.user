@@ -1,0 +1,14 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=56fce7cd_002De3b5_002D4faa_002D990d_002D897f1980e86d/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Handle_ShouldCreateContentAndReturnId" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::78F77A96-746D-443F-8202-5E0C5D1079A3::net9.0::NextRef.Application.Tests.Handlers.Contents.CreateContentHandlerTests.Handle_ShouldCreateContentAndReturnId&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::78F77A96-746D-443F-8202-5E0C5D1079A3::net9.0::NextRef.Application.Tests.Handlers.Contents.CreateContentHandlerTests.Handle_ShouldThrow_WhenTitleIsEmpty&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::78F77A96-746D-443F-8202-5E0C5D1079A3::net9.0::NextRef.Application.Tests.Handlers.Contents.DeleteContentHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::78F77A96-746D-443F-8202-5E0C5D1079A3::net9.0::NextRef.Application.Tests.Handlers.Contents.GetContentByIdHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::78F77A96-746D-443F-8202-5E0C5D1079A3::net9.0::NextRef.Application.Tests.Handlers.Users.RegisterUserCommandHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::78F77A96-746D-443F-8202-5E0C5D1079A3::net9.0::NextRef.Application.Tests.Handlers.Users.LoginUserCommandHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::78F77A96-746D-443F-8202-5E0C5D1079A3::net9.0::NextRef.Application.Tests.Handlers.Users.UpdateUserHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::78F77A96-746D-443F-8202-5E0C5D1079A3::net9.0::NextRef.Application.Tests.Handlers.Users.GetUserHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::78F77A96-746D-443F-8202-5E0C5D1079A3::net9.0::NextRef.Application.Tests.Handlers.Users.RegisterUserHandlerTests&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

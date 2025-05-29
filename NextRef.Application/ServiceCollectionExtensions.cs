@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using NextRef.Application.Contents.Commands.CreateContent;
+using NextRef.Application.Users.Services;
 
 namespace NextRef.Application;
 public static class ServiceCollectionExtensions
@@ -8,6 +9,8 @@ public static class ServiceCollectionExtensions
     {
         services.AddMediatR(cfg =>
             cfg.RegisterServicesFromAssemblyContaining<CreateContentCommand>());
+
+        services.AddTransient<ISignInService, SignInService>();
 
         return services;
     }

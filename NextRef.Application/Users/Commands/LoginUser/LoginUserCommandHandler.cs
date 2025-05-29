@@ -1,16 +1,17 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
+using NextRef.Application.Users.Services;
 using NextRef.Infrastructure.Authentication;
 
 namespace NextRef.Application.Users.Commands.LoginUser;
 public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, string?>
 {
-    private readonly SignInManager<AppUser> _signInManager;
+    private readonly ISignInService _signInService;
     private readonly UserManager<AppUser> _userManager;
 
-    public LoginUserCommandHandler(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager)
+    public LoginUserCommandHandler(ISignInService signInService, UserManager<AppUser> userManager)
     {
-        _signInManager = signInManager;
+        _signInService = signInService;
         _userManager = userManager;
     }
 
@@ -20,7 +21,7 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, string?
         if (user == null)
             return null;
 
-        var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
+        var result = await _signInService.CheckPasswordSignInAsync(user, request.Password, false);
         if (!result.Succeeded)
             return null;
 

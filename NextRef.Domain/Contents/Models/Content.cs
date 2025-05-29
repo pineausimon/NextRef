@@ -10,6 +10,9 @@ public class Content
 
     private Content(Guid id, string title, string type, DateTime publishedAt, string? description)
     {
+        if (String.IsNullOrEmpty(title))
+            throw new ArgumentException("A Content must have a title");
+
         Id = id;
         Title = title;
         Type = type;
