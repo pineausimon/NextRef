@@ -1,0 +1,72 @@
+﻿// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table Users {
+  Id uuid [pk]
+  UserName nvarchar
+  Email nvarchar
+  CreatedAt datetime
+  UpdatedAt datetime
+}
+
+Table UserCollections {
+  Id uuid [pk]
+  UserId uuid [ref: > Users.Id]
+  Name nvarchar
+  CreatedAt datetime
+  UpdatedAt datetime
+}
+
+Table UserCollectionItems {
+  Id uuid [pk]
+  CollectionId uuid [ref: > UserCollections.Id]
+  ContentId uuid [ref: > Contents.Id]
+  Status nvarchar // Expected values: 'ToWatch', 'Watched', 'NotInterested'
+  AddedAt datetime
+
+  // Prevent duplicates in same collection
+  Indexes {
+    (CollectionId, ContentId) [unique]
+  }
+}
+
+Table Contents {
+  Id uuid [pk]
+  Title nvarchar
+  Type nvarchar // Example: 'Podcast', 'Book', 'Video', etc.
+  PublishedAt datetime
+  Description nvarchar
+  CreatedAt datetime
+  UpdatedAt datetime
+}
+
+Table Contributors {
+  Id uuid [pk]
+  FullName nvarchar
+  Bio nvarchar
+  CreatedAt datetime
+  UpdatedAt datetime
+}
+
+Table Contributions {
+  Id uuid [pk]
+  ContributorId uuid [ref: > Contributors.Id]
+  ContentId uuid [ref: > Contents.Id]
+  Role nvarchar // Expected values: 'Author', 'Host', 'Guest', etc.
+  CreatedAt datetime
+  UpdatedAt datetime
+
+  Indexes {
+    (ContributorId, ContentId, Role)
+  }
+}
+
+Table ContentMentions {
+  Id uuid [pk]
+  SourceContentId uuid [ref: > Contents.Id]
+  TargetContentId uuid [ref: > Contents.Id]
+  Context nvarchar
+  CreatedAt datetime
+  UpdatedAt datetime
+}
+

@@ -1,0 +1,9 @@
+﻿CREATE TABLE core.UserCollections (
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
+    UserId UNIQUEIDENTIFIER NOT NULL,
+    Name NVARCHAR(MAX) NOT NULL,
+    CreatedAt DATETIME NOT NULL,
+    UpdatedAt DATETIME NOT NULL,
+
+    CONSTRAINT FK_UserCollections_Users FOREIGN KEY (UserId) REFERENCES core.Users(Id)
+);

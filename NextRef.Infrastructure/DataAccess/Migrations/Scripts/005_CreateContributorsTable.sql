@@ -1,0 +1,7 @@
+﻿CREATE TABLE core.Contributors (
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
+    FullName NVARCHAR(MAX) NOT NULL,
+    Bio NVARCHAR(MAX),
+    CreatedAt DATETIME NOT NULL,
+    UpdatedAt DATETIME NOT NULL
+);
