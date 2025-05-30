@@ -35,7 +35,7 @@ public class ContentsController : ControllerBase
     public async Task<IActionResult> Create(CreateContentCommand command)
     {
         var newId = await _mediator.Send(command);
-        return CreatedAtAction(nameof(Get), new { id = newId }, new { id = newId });
+        return CreatedAtAction(nameof(Create), new { id = newId }, new { id = newId });
     }
 
     [Authorize(Policy = "UserOrAdmin")]

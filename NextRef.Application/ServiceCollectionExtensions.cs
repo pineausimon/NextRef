@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using NextRef.Application.Behaviors;
 using NextRef.Application.Contents.Commands.CreateContent;
@@ -10,13 +9,15 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        services.AddMediatR(cfg =>
-            cfg.RegisterServicesFromAssemblyContaining<CreateContentCommand>());
-
-
         services.AddValidatorsFromAssemblyContaining<CreateContentCommandValidator>();
 
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        services.AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssemblyContaining<CreateContentCommand>();
+            cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+        });
+
+        //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
         services.AddScoped<IContributionService, ContributionService>();
 
