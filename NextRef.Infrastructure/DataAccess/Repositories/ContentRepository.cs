@@ -21,7 +21,7 @@ public class ContentRepository : IContentRepository
         const string query = "SELECT * FROM Core.Contents WHERE Id = @Id";
 
         using var connection = _context.CreateConnection();
-        var entity = await connection.QuerySingleOrDefaultAsync<ContentEntity>(query, new { Id = id });
+        var entity = await connection.QuerySingleOrDefaultAsync<ContentEntity>(query, new { Id = id.Value });
 
         if (entity == null)
             return null;
@@ -38,7 +38,7 @@ public class ContentRepository : IContentRepository
         using var connection = _context.CreateConnection();
         var added = await connection.ExecuteAsync(query, new
         {
-            content.Id,
+            Id = content.Id.Value,
             content.Title,
             content.Type,
             content.Description,
@@ -70,7 +70,7 @@ public class ContentRepository : IContentRepository
             content.Description,
             content.PublishedAt,
             UpdatedAt = DateTime.UtcNow,
-            content.Id
+            Id = content.Id.Value,
         });
 
         if (updated == 0)
@@ -82,6 +82,6 @@ public class ContentRepository : IContentRepository
         const string query = "DELETE FROM Core.Contents WHERE Id = @Id";
 
         using var connection = _context.CreateConnection();
-        await connection.ExecuteAsync(query, new { Id = id });
+        await connection.ExecuteAsync(query, new { Id = id.Value });
     }
 }

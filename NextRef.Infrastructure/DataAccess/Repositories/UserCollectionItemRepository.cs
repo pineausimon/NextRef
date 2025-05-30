@@ -21,7 +21,7 @@ public class UserCollectionItemRepository : IUserCollectionItemRepository
         const string query = "SELECT * FROM UserCollectionItems WHERE Id = @Id";
 
         using var connection = _context.CreateConnection();
-        var entity = await connection.QuerySingleOrDefaultAsync<UserCollectionItemEntity>(query, new { Id = id });
+        var entity = await connection.QuerySingleOrDefaultAsync<UserCollectionItemEntity>(query, new { Id = id.Value });
         return entity?.ToDomain();
     }
 
@@ -30,7 +30,7 @@ public class UserCollectionItemRepository : IUserCollectionItemRepository
         const string query = "SELECT * FROM UserCollectionItems WHERE CollectionId = @CollectionId";
 
         using var connection = _context.CreateConnection();
-        var entities = await connection.QueryAsync<UserCollectionItemEntity>(query, new { CollectionId = collectionId });
+        var entities = await connection.QueryAsync<UserCollectionItemEntity>(query, new { CollectionId = collectionId.Value });
         return entities.Select(e => e.ToDomain());
     }
 
@@ -42,9 +42,9 @@ public class UserCollectionItemRepository : IUserCollectionItemRepository
         using var connection = _context.CreateConnection();
         var added = await connection.ExecuteAsync(query, new
         {
-            item.Id,
-            item.CollectionId,
-            item.ContentId,
+            Id = item.Id.Value,
+            CollectionId = item.CollectionId.Value,
+            ContentId = item.ContentId.Value,
             item.Status,
             item.AddedAt,
             CreatedAt = DateTime.UtcNow,
@@ -67,7 +67,7 @@ public class UserCollectionItemRepository : IUserCollectionItemRepository
         {
             item.Status,
             UpdatedAt = DateTime.UtcNow,
-            item.Id
+            Id = item.Id.Value
         });
 
 
@@ -80,7 +80,7 @@ public class UserCollectionItemRepository : IUserCollectionItemRepository
         const string query = "DELETE FROM UserCollectionItems WHERE Id = @Id";
 
         using var connection = _context.CreateConnection();
-        await connection.ExecuteAsync(query, new { Id = id });
+        await connection.ExecuteAsync(query, new { Id = id.Value });
     }
 
     public async Task<bool> ExistsAsync(UserCollectionId collectionId, ContentId contentId)
@@ -91,7 +91,7 @@ public class UserCollectionItemRepository : IUserCollectionItemRepository
             WHERE CollectionId = @CollectionId AND ContentId = @ContentId";
 
         using var connection = _context.CreateConnection();
-        var exists = await connection.ExecuteScalarAsync<bool>(query, new { CollectionId = collectionId, ContentId = contentId });
+        var exists = await connection.ExecuteScalarAsync<bool>(query, new { CollectionId = collectionId.Value, ContentId = contentId.Value });
         return exists;
     }
 }

@@ -19,7 +19,7 @@ public class UserRepository : IUserRepository
     {
         using var connection = _context.CreateConnection();
         const string query = "SELECT Id, UserName, Email FROM Core.Users WHERE Id = @Id";
-        var entity = await connection.QuerySingleOrDefaultAsync<UserEntity>(query, new { Id = id });
+        var entity = await connection.QuerySingleOrDefaultAsync<UserEntity>(query, new { Id = id.Value });
 
         return UserMapper.ToDomain(entity);
     }
@@ -33,7 +33,7 @@ public class UserRepository : IUserRepository
         using var connection = _context.CreateConnection();
         var added = await connection.ExecuteAsync(query, new
         {
-            user.Id,
+            Id = user.Id.Value,
             user.UserName,
             user.Email,
             CreatedAt = DateTime.UtcNow,
@@ -54,7 +54,7 @@ public class UserRepository : IUserRepository
             user.UserName,
             user.Email,
             UpdatedAt = DateTime.UtcNow,
-            user.Id
+            Id = user.Id.Value
         });
 
         if (updated == 0)
@@ -66,6 +66,6 @@ public class UserRepository : IUserRepository
         const string query = "DELETE FROM Core.Users WHERE Id = @Id";
 
         using var connection = _context.CreateConnection();
-        await connection.ExecuteAsync(query, new { Id = id });
+        await connection.ExecuteAsync(query, new { Id = id.Value });
     }
 }

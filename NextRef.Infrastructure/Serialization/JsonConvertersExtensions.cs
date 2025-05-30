@@ -3,7 +3,7 @@
 namespace NextRef.Infrastructure.Serialization;
 public static class JsonConvertersExtensions
 {
-    public static void AddStronglyTypedIdConverters(this JsonSerializerOptions options)
+    public static JsonSerializerOptions AddStronglyTypedIdConverters(this JsonSerializerOptions options)
     {
         options.Converters.Add(new UserIdJsonConverter());
         options.Converters.Add(new ContentIdJsonConverter());
@@ -12,5 +12,6 @@ public static class JsonConvertersExtensions
         options.Converters.Add(new ContributorIdJsonConverter());
         options.Converters.Add(new UserCollectionIdJsonConverter());
         options.Converters.Add(new UserCollectionItemIdJsonConverter());
+        return options; 
     }
 }

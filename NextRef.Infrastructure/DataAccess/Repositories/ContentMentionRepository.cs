@@ -24,9 +24,9 @@ public class ContentMentionRepository : IContentMentionRepository
 
         var parameters = new
         {
-            mention.Id,
-            mention.SourceContentId,
-            mention.TargetContentId,
+            Id = mention.Id.Value,
+            SourceContentId = mention.SourceContentId.Value,
+            TargetContentId = mention.TargetContentId.Value,
             mention.Context,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
@@ -48,7 +48,7 @@ public class ContentMentionRepository : IContentMentionRepository
         {
             mention.Context,
             UpdatedAt = DateTime.UtcNow,
-            Id = mention.Id,
+            Id = mention.Id.Value,
         };
 
         using var connection = _context.CreateConnection();
@@ -60,7 +60,7 @@ public class ContentMentionRepository : IContentMentionRepository
         const string query = "DELETE FROM Core.ContentMentions WHERE Id = @Id";
 
         using var connection = _context.CreateConnection();
-        await connection.ExecuteAsync(query, new { Id = contentId });
+        await connection.ExecuteAsync(query, new { Id = contentId.Value });
     }
 
     public async Task<IEnumerable<ContentMention>> GetByTargetContentIdAsync(ContentId contentId)
@@ -69,7 +69,7 @@ public class ContentMentionRepository : IContentMentionRepository
 
         using var connection = _context.CreateConnection();
         var entities = await connection.QueryAsync<ContentMentionEntity>(
-            new CommandDefinition(sql, new { TargetContentId = contentId }));
+            new CommandDefinition(sql, new { TargetContentId = contentId.Value }));
 
         return entities.Select(ContentMentionMapper.ToDomain);
     }
@@ -80,7 +80,7 @@ public class ContentMentionRepository : IContentMentionRepository
 
         using var connection = _context.CreateConnection();
         var entity = await connection.QuerySingleOrDefaultAsync<ContentMentionEntity>(
-            new CommandDefinition(sql, new { Id = contentId }));
+            new CommandDefinition(sql, new { Id = contentId.Value }));
 
         return ContentMentionMapper.ToDomain(entity);
     }
@@ -91,7 +91,7 @@ public class ContentMentionRepository : IContentMentionRepository
 
         using var connection = _context.CreateConnection();
         var entities = await connection.QueryAsync<ContentMentionEntity>(
-            new CommandDefinition(sql, new { SourceContentId = contentId }));
+            new CommandDefinition(sql, new { SourceContentId = contentId.Value }));
 
         return entities.Select(ContentMentionMapper.ToDomain);
     }

@@ -24,7 +24,7 @@ public class ContributorRepository : IContributorRepository
 
         var parameters = new
         {
-            contributor.Id,
+            Id = contributor.Id.Value,
             contributor.FullName,
             contributor.Bio,
             CreatedAt = DateTime.UtcNow,
@@ -50,7 +50,7 @@ public class ContributorRepository : IContributorRepository
             contributor.FullName,
             contributor.Bio,
             UpdatedAt = DateTime.UtcNow,
-            contributor.Id,
+            Id = contributor.Id.Value,
         };
 
         using var connection = _context.CreateConnection();
@@ -62,7 +62,7 @@ public class ContributorRepository : IContributorRepository
         const string query = "DELETE FROM Core.Contributors WHERE Id = @Id";
 
         using var connection = _context.CreateConnection();
-        await connection.ExecuteAsync(query, new { Id = id });
+        await connection.ExecuteAsync(query, new { Id = id.Value });
     }
 
     public async Task<Contributor?> GetByIdAsync(ContributorId id)
@@ -71,7 +71,7 @@ public class ContributorRepository : IContributorRepository
 
         using var connection = _context.CreateConnection();
         var entity = await connection.QuerySingleOrDefaultAsync<ContributorEntity>(
-            new CommandDefinition(query, new { Id = id }));
+            new CommandDefinition(query, new { Id = id.Value }));
 
         return entity?.ToDomain();
     }

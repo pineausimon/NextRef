@@ -24,9 +24,9 @@ public class ContributionRepository : IContributionRepository
 
         var parameters = new
         {
-            contribution.Id,
-            contribution.ContributorId,
-            contribution.ContentId,
+            Id = contribution.Id.Value,
+            ContributorId = contribution.ContributorId.Value,
+            ContentId = contribution.ContentId.Value,
             contribution.Role,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
@@ -49,7 +49,7 @@ public class ContributionRepository : IContributionRepository
         {
             contribution.Role,
             UpdatedAt = DateTime.UtcNow,
-            contribution.Id,
+            Id = contribution.Id.Value,
         };
 
         using var connection = _context.CreateConnection();
@@ -61,7 +61,7 @@ public class ContributionRepository : IContributionRepository
         const string query = "DELETE FROM Core.Contributions WHERE Id = @Id";
 
         using var connection = _context.CreateConnection();
-        await connection.ExecuteAsync(query, new { Id = id });
+        await connection.ExecuteAsync(query, new { Id = id.Value });
     }
 
     public async Task<Contribution?> GetByIdAsync(ContributionId id)
@@ -70,7 +70,7 @@ public class ContributionRepository : IContributionRepository
 
         using var connection = _context.CreateConnection();
         var entity = await connection.QuerySingleOrDefaultAsync<ContributionEntity>(
-            new CommandDefinition(query, new { Id = id }));
+            new CommandDefinition(query, new { Id = id.Value }));
 
         return entity?.ToDomain();
     }
@@ -81,7 +81,7 @@ public class ContributionRepository : IContributionRepository
 
         using var connection = _context.CreateConnection();
         var entities = await connection.QueryAsync<ContributionEntity>(
-            new CommandDefinition(query, new { contributorId }));
+            new CommandDefinition(query, new { ContributionId = contributorId.Value }));
 
         return entities.Select(e => e.ToDomain());
     }
@@ -92,7 +92,7 @@ public class ContributionRepository : IContributionRepository
 
         using var connection = _context.CreateConnection();
         var entities = await connection.QueryAsync<ContributionEntity>(
-            new CommandDefinition(query, new { contentId }));
+            new CommandDefinition(query, new { ContentId = contentId.Value }));
 
         return entities.Select(e => e.ToDomain());
     }

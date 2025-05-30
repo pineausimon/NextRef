@@ -18,7 +18,7 @@ public class ExceptionHandlingMiddleware
     {
         try
         {
-            await _next(context); // Laisse passer la requête
+            await _next(context); 
         }
         catch (ValidationException ex)
         {

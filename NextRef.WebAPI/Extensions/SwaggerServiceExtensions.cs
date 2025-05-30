@@ -1,4 +1,5 @@
 ﻿using Microsoft.OpenApi.Models;
+using NextRef.Domain.Core.Ids;
 
 namespace NextRef.WebAPI.Extensions;
 
@@ -8,6 +9,14 @@ public static class SwaggerServiceExtensions
     {
         services.AddSwaggerGen(c =>
         {
+            c.MapType<UserId>(() => new OpenApiSchema { Type = "string", Format = "uuid" });
+            c.MapType<UserCollectionId>(() => new OpenApiSchema { Type = "string", Format = "uuid" });
+            c.MapType<UserCollectionItemId>(() => new OpenApiSchema { Type = "string", Format = "uuid" });
+            c.MapType<ContentId>(() => new OpenApiSchema { Type = "string", Format = "uuid" });
+            c.MapType<ContributionId>(() => new OpenApiSchema { Type = "string", Format = "uuid" });
+            c.MapType<ContributorId>(() => new OpenApiSchema { Type = "string", Format = "uuid" });
+            c.MapType<ContentMentionId>(() => new OpenApiSchema { Type = "string", Format = "uuid" });
+
             c.SwaggerDoc("v1", new OpenApiInfo
             {
                 Title = "Annote API",

@@ -21,7 +21,7 @@ public class UserCollectionRepository : IUserCollectionRepository
         const string query = "SELECT * FROM Core.UserCollections WHERE Id = @Id";
 
         using var connection = _context.CreateConnection();
-        var entity = await connection.QuerySingleOrDefaultAsync<UserCollectionEntity>(query, new { Id = id });
+        var entity = await connection.QuerySingleOrDefaultAsync<UserCollectionEntity>(query, new { Id = id.Value });
         return entity?.ToDomain();
     }
 
@@ -30,7 +30,7 @@ public class UserCollectionRepository : IUserCollectionRepository
         const string query = "SELECT * FROM Core.UserCollections WHERE UserId = @UserId";
 
         using var connection = _context.CreateConnection();
-        var entities = await connection.QueryAsync<UserCollectionEntity>(query, new { UserId = userId });
+        var entities = await connection.QueryAsync<UserCollectionEntity>(query, new { UserId = userId.Value });
         return entities.Select(e => e.ToDomain());
     }
 
@@ -43,8 +43,8 @@ public class UserCollectionRepository : IUserCollectionRepository
         using var connection = _context.CreateConnection();
         var added = await connection.ExecuteAsync(query, new
         {
-            collection.Id,
-            collection.UserId,
+            Id = collection.Id.Value,
+            UserId = collection.UserId.Value,
             collection.Name,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
@@ -66,7 +66,7 @@ public class UserCollectionRepository : IUserCollectionRepository
         {
             collection.Name,
             UpdatedAt = DateTime.UtcNow,
-            collection.Id
+            Id = collection.Id.Value
         });
 
 
@@ -79,6 +79,6 @@ public class UserCollectionRepository : IUserCollectionRepository
         const string query = "DELETE FROM Core.UserCollections WHERE Id = @Id";
 
         using var connection = _context.CreateConnection();
-        await connection.ExecuteAsync(query, new { Id = id });
+        await connection.ExecuteAsync(query, new { Id = id.Value });
     }
 }
