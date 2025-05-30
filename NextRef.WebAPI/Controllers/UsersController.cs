@@ -5,6 +5,7 @@ using NextRef.Application.Users.Commands.LoginUser;
 using NextRef.Application.Users.Commands.RegisterUser;
 using NextRef.Application.Users.Commands.UpdateUser;
 using NextRef.Application.Users.Queries.GetUser;
+using NextRef.Domain.Core.Ids;
 
 namespace NextRef.WebAPI.Controllers;
 [ApiController]
@@ -44,7 +45,7 @@ public class UsersController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetUser(Guid id)
     {
-        var user = await _mediator.Send(new GetUserQuery(id));
+        var user = await _mediator.Send(new GetUserQuery((UserId)id));
         if (user == null)
             return NotFound();
         return Ok(user);
@@ -54,7 +55,7 @@ public class UsersController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUser(Guid id, UpdateUserCommand command)
     {
-        if (id != command.Id)
+        if ((UserId)id != command.Id)
             return BadRequest("Id mismatch");
 
         var user = await _mediator.Send(command);

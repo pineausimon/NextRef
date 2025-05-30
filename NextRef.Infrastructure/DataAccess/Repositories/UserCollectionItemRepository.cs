@@ -3,6 +3,7 @@ using NextRef.Domain.UserCollections.Repositories;
 using NextRef.Infrastructure.DataAccess.Configuration;
 using NextRef.Infrastructure.DataAccess.Entities;
 using Dapper;
+using NextRef.Domain.Core.Ids;
 using NextRef.Infrastructure.DataAccess.Mappers;
 
 namespace NextRef.Infrastructure.DataAccess.Repositories;
@@ -15,7 +16,7 @@ public class UserCollectionItemRepository : IUserCollectionItemRepository
         _context = context;
     }
 
-    public async Task<UserCollectionItem?> GetByIdAsync(Guid id)
+    public async Task<UserCollectionItem?> GetByIdAsync(UserCollectionItemId id)
     {
         const string query = "SELECT * FROM UserCollectionItems WHERE Id = @Id";
 
@@ -24,7 +25,7 @@ public class UserCollectionItemRepository : IUserCollectionItemRepository
         return entity?.ToDomain();
     }
 
-    public async Task<IEnumerable<UserCollectionItem>> GetByCollectionIdAsync(Guid collectionId)
+    public async Task<IEnumerable<UserCollectionItem>> GetByCollectionIdAsync(UserCollectionId collectionId)
     {
         const string query = "SELECT * FROM UserCollectionItems WHERE CollectionId = @CollectionId";
 
@@ -74,7 +75,7 @@ public class UserCollectionItemRepository : IUserCollectionItemRepository
             throw new InvalidDataException();
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(UserCollectionItemId id)
     {
         const string query = "DELETE FROM UserCollectionItems WHERE Id = @Id";
 
@@ -82,7 +83,7 @@ public class UserCollectionItemRepository : IUserCollectionItemRepository
         await connection.ExecuteAsync(query, new { Id = id });
     }
 
-    public async Task<bool> ExistsAsync(Guid collectionId, Guid contentId)
+    public async Task<bool> ExistsAsync(UserCollectionId collectionId, ContentId contentId)
     {
         const string query = @"
             SELECT COUNT(1)

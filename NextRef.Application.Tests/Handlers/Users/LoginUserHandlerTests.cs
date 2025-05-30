@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Moq;
+﻿using Moq;
 using NextRef.Application.Users.Commands.LoginUser;
 using NextRef.Application.Users.Services;
 

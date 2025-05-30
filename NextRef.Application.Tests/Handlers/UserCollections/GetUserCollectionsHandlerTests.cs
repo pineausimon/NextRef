@@ -1,5 +1,6 @@
 ﻿using Moq;
 using NextRef.Application.UserCollections.Queries.GetUserCollections;
+using NextRef.Domain.Core.Ids;
 using NextRef.Domain.UserCollections.Models;
 using NextRef.Domain.UserCollections.Repositories;
 
@@ -19,11 +20,11 @@ public class GetUserCollectionsHandlerTests
     public async Task Handle_ShouldReturnUserCollections_WhenCollectionsExist()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = UserId.New();
         var collections = new List<UserCollection>
         {
-            UserCollection.Rehydrate(Guid.NewGuid(), userId, "Favorites"),
-            UserCollection.Rehydrate(Guid.NewGuid(), userId, "Sci-fi")
+            UserCollection.Rehydrate(UserCollectionId.New(), userId, "Favorites"),
+            UserCollection.Rehydrate(UserCollectionId.New(), userId, "Sci-fi")
         };
 
         _userCollectionRepositoryMock
@@ -47,7 +48,7 @@ public class GetUserCollectionsHandlerTests
     public async Task Handle_ShouldReturnEmptyList_WhenNoCollectionsFound()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = UserId.New();
 
         _userCollectionRepositoryMock
             .Setup(repo => repo.GetByUserIdAsync(userId))

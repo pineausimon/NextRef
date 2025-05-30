@@ -1,6 +1,7 @@
 ﻿using NextRef.Domain.Users;
 using NextRef.Infrastructure.DataAccess.Entities;
 using Dapper;
+using NextRef.Domain.Core.Ids;
 using NextRef.Infrastructure.DataAccess.Configuration;
 using NextRef.Infrastructure.DataAccess.Mappers;
 
@@ -14,7 +15,7 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    public async Task<User?> GetByIdAsync(Guid id)
+    public async Task<User?> GetByIdAsync(UserId id)
     {
         using var connection = _context.CreateConnection();
         const string query = "SELECT Id, UserName, Email FROM Core.Users WHERE Id = @Id";
@@ -60,7 +61,7 @@ public class UserRepository : IUserRepository
             throw new InvalidDataException();
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(UserId id)
     {
         const string query = "DELETE FROM Core.Users WHERE Id = @Id";
 

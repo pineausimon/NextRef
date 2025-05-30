@@ -3,6 +3,7 @@ using NextRef.Domain.Contents.Models;
 using NextRef.Infrastructure.DataAccess.Configuration;
 using NextRef.Infrastructure.DataAccess.Entities;
 using NextRef.Domain.Contents.Repositories;
+using NextRef.Domain.Core.Ids;
 using NextRef.Infrastructure.DataAccess.Mappers;
 
 namespace NextRef.Infrastructure.DataAccess.Repositories;
@@ -55,7 +56,7 @@ public class ContributionRepository : IContributionRepository
         await connection.ExecuteAsync(new CommandDefinition(query, parameters));
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(ContributionId id)
     {
         const string query = "DELETE FROM Core.Contributions WHERE Id = @Id";
 
@@ -63,7 +64,7 @@ public class ContributionRepository : IContributionRepository
         await connection.ExecuteAsync(query, new { Id = id });
     }
 
-    public async Task<Contribution?> GetByIdAsync(Guid id)
+    public async Task<Contribution?> GetByIdAsync(ContributionId id)
     {
         const string query = "SELECT * FROM Core.Contributions WHERE Id = @Id;";
 
@@ -74,7 +75,7 @@ public class ContributionRepository : IContributionRepository
         return entity?.ToDomain();
     }
 
-    public async Task<IEnumerable<Contribution>> GetByContributorIdAsync(Guid contributorId)
+    public async Task<IEnumerable<Contribution>> GetByContributorIdAsync(ContributorId contributorId)
     {
         const string query = "SELECT * FROM Core.Contributions WHERE ContributorId = @ContributorId;";
 
@@ -85,7 +86,7 @@ public class ContributionRepository : IContributionRepository
         return entities.Select(e => e.ToDomain());
     }
 
-    public async Task<IEnumerable<Contribution>> GetByContentIdAsync(Guid contentId)
+    public async Task<IEnumerable<Contribution>> GetByContentIdAsync(ContentId contentId)
     {
         const string query = "SELECT * FROM Core.Contributions WHERE ContentId = @ContentId;";
 

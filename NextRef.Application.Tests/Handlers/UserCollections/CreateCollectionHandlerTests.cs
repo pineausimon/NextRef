@@ -1,5 +1,6 @@
 ﻿using Moq;
 using NextRef.Application.UserCollections.Commands.CreateCollection;
+using NextRef.Domain.Core.Ids;
 using NextRef.Domain.UserCollections.Models;
 using NextRef.Domain.UserCollections.Repositories;
 
@@ -19,7 +20,7 @@ public class CreateCollectionHandlerTests
     public async Task Handle_ShouldCreateCollectionAndReturnId()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = UserId.New();
         var name = "Ma collection";
 
         UserCollection? savedCollection = null;
@@ -37,7 +38,7 @@ public class CreateCollectionHandlerTests
         // Assert
         _repositoryMock.Verify(r => r.AddAsync(It.IsAny<UserCollection>()), Times.Once);
 
-        Assert.NotEqual(Guid.Empty, result);
+        Assert.NotEqual(Guid.Empty, result.Value);
         Assert.NotNull(savedCollection);
         Assert.Equal(result, savedCollection!.Id);
         Assert.Equal(name, savedCollection.Name);

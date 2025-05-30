@@ -1,4 +1,5 @@
-﻿using NextRef.Domain.Users;
+﻿using NextRef.Domain.Core.Ids;
+using NextRef.Domain.Users;
 using NextRef.Infrastructure.DataAccess.Entities;
 
 namespace NextRef.Infrastructure.DataAccess.Mappers;
@@ -17,6 +18,6 @@ public static class UserMapper
     public static User ToDomain(UserEntity entity)
     {
         return User.Rehydrate(
-            entity.Id, entity.UserName, entity.UserName);
+            (UserId)entity.Id, entity.UserName, entity.UserName);
     }
 }

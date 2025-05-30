@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using NextRef.Domain.Contents.Models;
 using NextRef.Domain.Contents.Repositories;
+using NextRef.Domain.Core.Ids;
 using NextRef.Infrastructure.DataAccess.Configuration;
 using NextRef.Infrastructure.DataAccess.Entities;
 using NextRef.Infrastructure.DataAccess.Mappers;
@@ -54,7 +55,7 @@ public class ContentMentionRepository : IContentMentionRepository
         await connection.ExecuteAsync(new CommandDefinition(sql, parameters));
     }
 
-    public async Task DeleteAsync(Guid contentId)
+    public async Task DeleteAsync(ContentMentionId contentId)
     {
         const string query = "DELETE FROM Core.ContentMentions WHERE Id = @Id";
 
@@ -62,7 +63,7 @@ public class ContentMentionRepository : IContentMentionRepository
         await connection.ExecuteAsync(query, new { Id = contentId });
     }
 
-    public async Task<IEnumerable<ContentMention>> GetByTargetContentIdAsync(Guid contentId)
+    public async Task<IEnumerable<ContentMention>> GetByTargetContentIdAsync(ContentId contentId)
     {
         const string sql = "SELECT * FROM Core.ContentMentions WHERE TargetContentId = @TargetContentId;";
 
@@ -73,7 +74,7 @@ public class ContentMentionRepository : IContentMentionRepository
         return entities.Select(ContentMentionMapper.ToDomain);
     }
 
-    public async Task<ContentMention?> GetByIdAsync(Guid contentId)
+    public async Task<ContentMention?> GetByIdAsync(ContentMentionId contentId)
     {
         const string sql = "SELECT * FROM Core.ContentMentions WHERE Id = @Id;";
 
@@ -84,7 +85,7 @@ public class ContentMentionRepository : IContentMentionRepository
         return ContentMentionMapper.ToDomain(entity);
     }
 
-    public async Task<IEnumerable<ContentMention>> GetBySourceContentIdAsync(Guid contentId)
+    public async Task<IEnumerable<ContentMention>> GetBySourceContentIdAsync(ContentId contentId)
     {
         const string sql = "SELECT * FROM Core.ContentMentions WHERE SourceContentId = @SourceContentId;";
 

@@ -1,12 +1,13 @@
 ﻿using NextRef.Application.Contents.Models;
 using NextRef.Domain.Contents.Models;
 using NextRef.Domain.Contents.Repositories;
+using NextRef.Domain.Core.Ids;
 
 namespace NextRef.Application.Contents.Services;
 public interface IContributionService
 {
     Task AddContributionsAsync(
-        Guid contentId,
+        ContentId contentId,
         List<ContributionWithExistingContributorDto> existings,
         List<ContributionWithNewContributorDto> news);
 }
@@ -25,23 +26,33 @@ public class ContributionService : IContributionService
     }
 
     public async Task AddContributionsAsync(
-        Guid contentId,
+        ContentId contentId,
         List<ContributionWithExistingContributorDto> existings,
         List<ContributionWithNewContributorDto> news)
     {
         foreach (var dto in existings)
         {
-            var contribution = Contribution.Create(contentId, dto.ContributorId, dto.Role);
+            var contribution = Contribution.Create(dto.ContributorId, contentId, dto.Role);
             await _contributionRepo.AddAsync(contribution);
         }
 
-        // 2. Ajouter les nouveaux contributeurs + leurs contributions
         foreach (var dto in news)
         {
-            var contributor = Contributor.Create(dto.FullName, ""); 
-            await _contributorRepo.AddAsync(contributor);
+            var existingContributor = await _contributorRepo.GetByFullNameAsync(dto.FullName.Trim());
 
-            var contribution = Contribution.Create(contentId, contributor.Id, dto.Role);
+            Contributor contributor;
+
+            if (existingContributor is not null)
+            {
+                contributor = existingContributor;
+            }
+            else
+            {
+                contributor = Contributor.Create(dto.FullName.Trim(), "");
+                await _contributorRepo.AddAsync(contributor);
+            }
+
+            var contribution = Contribution.Create(contributor.Id, contentId, dto.Role);
             await _contributionRepo.AddAsync(contribution);
         }
     }

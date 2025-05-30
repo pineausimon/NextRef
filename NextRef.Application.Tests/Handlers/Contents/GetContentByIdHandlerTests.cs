@@ -4,6 +4,7 @@ using NextRef.Application.Contents.Queries.GetContentById;
 using NextRef.Domain.Contents.Models;
 using NextRef.Domain.Contents.Repositories;
 using FluentAssertions;
+using NextRef.Domain.Core.Ids;
 
 namespace NextRef.Application.Tests.Handlers.Contents;
 public class GetContentByIdHandlerTests
@@ -21,7 +22,7 @@ public class GetContentByIdHandlerTests
     public async Task Handle_ShouldReturnMappedDto_WhenContentExists()
     {
         // Arrange
-        var contentId = Guid.NewGuid();
+        var contentId = ContentId.New();
         var domainContent = Content.Rehydrate(contentId, "Titre", "Type", DateTime.UtcNow, "Description");
 
         _contentRepositoryMock
@@ -51,7 +52,7 @@ public class GetContentByIdHandlerTests
     public async Task Handle_ShouldReturnNull_WhenContentDoesNotExist()
     {
         // Arrange
-        var contentId = Guid.NewGuid();
+        var contentId = ContentId.New();
 
         _contentRepositoryMock
             .Setup(repo => repo.GetByIdAsync(contentId))

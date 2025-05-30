@@ -1,10 +1,11 @@
-﻿using NextRef.Domain.UserCollections.Models;
+﻿using NextRef.Domain.Core.Ids;
+using NextRef.Domain.UserCollections.Models;
 
 namespace NextRef.Application.UserCollections.Models;
 public record UserCollectionDto
 {
-    public Guid Id { get; set; }
-    public Guid UserId { get; set; }
+    public UserCollectionId Id { get; set; }
+    public UserId UserId { get; set; }
     public string Name { get; set; }
 
     public static UserCollectionDto FromDomain(UserCollection collection)

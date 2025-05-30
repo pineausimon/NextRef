@@ -1,5 +1,6 @@
 ﻿using Moq;
 using NextRef.Application.Users.Commands.UpdateUser;
+using NextRef.Domain.Core.Ids;
 using NextRef.Domain.Users;
 
 namespace NextRef.Application.Tests.Handlers.Users;
@@ -18,10 +19,10 @@ public class UpdateUserHandlerTests
     public async Task Handle_UserNotFound_ThrowsNullReferenceException()
     {
         // Arrange
-        _userRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
+        _userRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<UserId>()))
             .ReturnsAsync((User?)null);
 
-        var command = new UpdateUserCommand(Guid.NewGuid(), "newUserName", "newEmail");
+        var command = new UpdateUserCommand(UserId.New(), "newUserName", "newEmail");
 
         // Act & Assert
         await Assert.ThrowsAsync<NullReferenceException>(() =>
@@ -32,7 +33,7 @@ public class UpdateUserHandlerTests
     public async Task Handle_UserExists_UpdatesUserAndReturnsDto()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = UserId.New();
         var user = User.Rehydrate(userId, "oldUserName", "oldEmail@example.com");
 
         _userRepositoryMock.Setup(r => r.GetByIdAsync(userId))

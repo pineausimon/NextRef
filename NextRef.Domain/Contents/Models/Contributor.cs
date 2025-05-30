@@ -1,12 +1,14 @@
-﻿namespace NextRef.Domain.Contents.Models
+﻿using NextRef.Domain.Core.Ids;
+
+namespace NextRef.Domain.Contents.Models
 {
     public class Contributor
     {
-        public Guid Id { get; private set; }
+        public ContributorId Id { get; private set; }
         public string FullName { get; private set; }
         public string Bio { get; private set; }
 
-        private Contributor(Guid id, string fullName, string bio)
+        private Contributor(ContributorId id, string fullName, string bio)
         {
             Id = id;
             FullName = fullName;
@@ -19,12 +21,12 @@
                 throw new ArgumentException("FullName cannot be empty", nameof(fullName));
 
             return new Contributor(
-                Guid.NewGuid(),
+                ContributorId.New(),
                 fullName,
                 bio);
         }
 
-        public static Contributor Rehydrate(Guid id, string fullName, string bio)
+        public static Contributor Rehydrate(ContributorId id, string fullName, string bio)
         {
             return new Contributor(id, fullName, bio);
         }

@@ -1,4 +1,5 @@
-﻿using NextRef.Domain.UserCollections.Models;
+﻿using NextRef.Domain.Core.Ids;
+using NextRef.Domain.UserCollections.Models;
 using NextRef.Infrastructure.DataAccess.Entities;
 
 namespace NextRef.Infrastructure.DataAccess.Mappers;
@@ -25,6 +26,11 @@ public static class UserCollectionItemMapper
         //    ? parsed
         //    : UserCollectionItemStatus.Pending;
 
-        return UserCollectionItem.Rehydrate(entity.Id, entity.CollectionId, entity.ContentId, entity.Status, entity.AddedAt);
+        return UserCollectionItem.Rehydrate(
+            (UserCollectionItemId)entity.Id, 
+            (UserCollectionId)entity.CollectionId, 
+            (ContentId)entity.ContentId, 
+            entity.Status, 
+            entity.AddedAt);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using MediatR;
+using NextRef.Domain.Core.Ids;
 
 namespace NextRef.Application.UserCollections.Commands.CreateCollection;
 
-public record CreateCollectionCommand(Guid UserId, string Name) : IRequest<Guid>;
+public record CreateCollectionCommand(UserId UserId, string Name) : IRequest<UserCollectionId>;
 

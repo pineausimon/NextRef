@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using NextRef.Domain.Contents.Models;
 using NextRef.Domain.Contents.Repositories;
+using NextRef.Domain.Core.Ids;
 using NextRef.Infrastructure.DataAccess.Configuration;
 using NextRef.Infrastructure.DataAccess.Entities;
 using NextRef.Infrastructure.DataAccess.Mappers;
@@ -15,7 +16,7 @@ public class ContentRepository : IContentRepository
         _context = context;
     }
 
-    public async Task<Content?> GetByIdAsync(Guid id)
+    public async Task<Content?> GetByIdAsync(ContentId id)
     {
         const string query = "SELECT * FROM Core.Contents WHERE Id = @Id";
 
@@ -76,7 +77,7 @@ public class ContentRepository : IContentRepository
             throw new InvalidDataException();
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(ContentId id)
     {
         const string query = "DELETE FROM Core.Contents WHERE Id = @Id";
 

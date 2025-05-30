@@ -4,6 +4,7 @@ using NextRef.Application.Contents.Models;
 using NextRef.Application.Contents.Services;
 using NextRef.Domain.Contents.Models;
 using NextRef.Domain.Contents.Repositories;
+using NextRef.Domain.Core.Ids;
 
 namespace NextRef.Application.Tests.Handlers.Contents;
 public class CreateContentHandlerTests
@@ -27,7 +28,7 @@ public class CreateContentHandlerTests
             "Dystopian novel.",
             new List<ContributionWithExistingContributorDto>
             {
-                new(Guid.NewGuid(), "Author")
+                new(ContributorId.New(), "Author")
             },
             new List<ContributionWithNewContributorDto>
             {
@@ -43,14 +44,14 @@ public class CreateContentHandlerTests
             .Returns(Task.CompletedTask);
 
         _contributionServiceMock
-            .Setup(s => s.AddContributionsAsync(It.IsAny<Guid>(), command.ExistingContributions, command.NewContributions))
+            .Setup(s => s.AddContributionsAsync(It.IsAny<ContentId>(), command.ExistingContributions, command.NewContributions))
             .Returns(Task.CompletedTask);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        Assert.NotEqual(Guid.Empty, result);
+        Assert.NotEqual(Guid.Empty, result.Value);
         Assert.NotNull(createdContent);
         Assert.Equal(command.Title, createdContent!.Title);
         Assert.Equal(command.Type, createdContent.Type);
@@ -77,16 +78,16 @@ public class CreateContentHandlerTests
             .Returns(Task.CompletedTask);
 
         _contributionServiceMock
-            .Setup(s => s.AddContributionsAsync(It.IsAny<Guid>(), new List<ContributionWithExistingContributorDto>(), new List<ContributionWithNewContributorDto>()))
+            .Setup(s => s.AddContributionsAsync(It.IsAny<ContentId>(), new List<ContributionWithExistingContributorDto>(), new List<ContributionWithNewContributorDto>()))
             .Returns(Task.CompletedTask);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        Assert.NotEqual(Guid.Empty, result);
+        Assert.NotEqual(Guid.Empty, result.Value);
         _contentRepositoryMock.Verify(r => r.AddAsync(It.IsAny<Content>()), Times.Once);
-        _contributionServiceMock.Verify(s => s.AddContributionsAsync(It.IsAny<Guid>(), new List<ContributionWithExistingContributorDto>(), new List<ContributionWithNewContributorDto>()), Times.Once);
+        _contributionServiceMock.Verify(s => s.AddContributionsAsync(It.IsAny<ContentId>(), new List<ContributionWithExistingContributorDto>(), new List<ContributionWithNewContributorDto>()), Times.Once);
     }
 
 }

@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using NextRef.Domain.Contents.Models;
 using NextRef.Domain.Contents.Repositories;
+using NextRef.Domain.Core.Ids;
 using NextRef.Infrastructure.DataAccess.Configuration;
 using NextRef.Infrastructure.DataAccess.Entities;
 using NextRef.Infrastructure.DataAccess.Mappers;
@@ -56,7 +57,7 @@ public class ContributorRepository : IContributorRepository
         await connection.ExecuteAsync(new CommandDefinition(query, parameters));
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(ContributorId id)
     {
         const string query = "DELETE FROM Core.Contributors WHERE Id = @Id";
 
@@ -64,13 +65,22 @@ public class ContributorRepository : IContributorRepository
         await connection.ExecuteAsync(query, new { Id = id });
     }
 
-    public async Task<Contributor?> GetByIdAsync(Guid id)
+    public async Task<Contributor?> GetByIdAsync(ContributorId id)
     {
         const string query = "SELECT * FROM Core.Contributors WHERE Id = @Id;";
 
         using var connection = _context.CreateConnection();
         var entity = await connection.QuerySingleOrDefaultAsync<ContributorEntity>(
             new CommandDefinition(query, new { Id = id }));
+
+        return entity?.ToDomain();
+    }
+    public async Task<Contributor?> GetByFullNameAsync(string fullName)
+    {
+        var sql = "SELECT * FROM core.Contributors WHERE FullName = @FullName";
+        using var connection = _context.CreateConnection();
+        var entity = await connection.QuerySingleOrDefaultAsync<ContributorEntity>(
+            sql, new { FullName = fullName });
 
         return entity?.ToDomain();
     }

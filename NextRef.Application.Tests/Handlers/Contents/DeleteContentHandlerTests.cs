@@ -2,6 +2,7 @@
 using Moq;
 using NextRef.Application.Contents.Commands.DeleteContent;
 using NextRef.Domain.Contents.Repositories;
+using NextRef.Domain.Core.Ids;
 
 namespace NextRef.Application.Tests.Handlers.Contents;
 public class DeleteContentHandlerTests
@@ -19,7 +20,7 @@ public class DeleteContentHandlerTests
     public async Task Handle_ShouldCallDeleteAsyncWithCorrectId()
     {
         // Arrange
-        var contentId = Guid.NewGuid();
+        var contentId = ContentId.New();
         var command = new DeleteContentCommand(contentId);
 
         // Act

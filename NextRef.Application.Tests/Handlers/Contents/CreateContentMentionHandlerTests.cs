@@ -2,6 +2,7 @@
 using NextRef.Application.Contents.Commands.CreateContentMention;
 using NextRef.Domain.Contents.Models;
 using NextRef.Domain.Contents.Repositories;
+using NextRef.Domain.Core.Ids;
 
 namespace NextRef.Application.Tests.Handlers.Contents;
 public class CreateContentMentionHandlerTests
@@ -19,8 +20,8 @@ public class CreateContentMentionHandlerTests
     public async Task Handle_ShouldCreateContentMentionAndReturnId()
     {
         // Arrange
-        var sourceId = Guid.NewGuid();
-        var targetId = Guid.NewGuid();
+        var sourceId = ContentId.New();
+        var targetId = ContentId.New();
         var context = "Recommendation pour compléter le sujet de ce chapitre";
 
         ContentMention? savedMention = null;
@@ -38,7 +39,7 @@ public class CreateContentMentionHandlerTests
         // Assert
         _contentMentionRepositoryMock.Verify(r => r.AddAsync(It.IsAny<ContentMention>()), Times.Once);
 
-        Assert.NotEqual(Guid.Empty, result);
+        Assert.NotEqual(Guid.Empty, result.Value);
         Assert.NotNull(savedMention);
         Assert.Equal(result, savedMention!.Id);
         Assert.Equal(sourceId, savedMention.SourceContentId);

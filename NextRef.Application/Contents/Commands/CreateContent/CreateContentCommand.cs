@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using NextRef.Application.Contents.Models;
+using NextRef.Domain.Core.Ids;
 
 namespace NextRef.Application.Contents.Commands.CreateContent;
 
@@ -10,4 +11,4 @@ public record CreateContentCommand(
     string? Description,
     List<ContributionWithExistingContributorDto> ExistingContributions,
     List<ContributionWithNewContributorDto> NewContributions
-) : IRequest<Guid>;
+) : IRequest<ContentId>;

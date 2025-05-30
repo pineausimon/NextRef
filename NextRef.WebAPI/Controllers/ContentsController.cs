@@ -6,6 +6,7 @@ using NextRef.Application.Contents.Commands.DeleteContent;
 using NextRef.Application.Contents.Commands.UpdateContent;
 using NextRef.Application.Contents.Queries.GetContentById;
 using NextRef.Domain.Core;
+using NextRef.Domain.Core.Ids;
 
 namespace NextRef.WebAPI.Controllers;
 
@@ -24,7 +25,7 @@ public class ContentsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(Guid id)
     {
-        var content = await _mediator.Send(new GetContentByIdQuery(id));
+        var content = await _mediator.Send(new GetContentByIdQuery((ContentId)id));
         if (content == null) return NotFound();
         return Ok(content);
     }
@@ -41,7 +42,7 @@ public class ContentsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, UpdateContentCommand command)
     {
-        if (id != command.Id) return BadRequest("ID mismatch");
+        if ((ContentId) id != command.Id) return BadRequest("ID mismatch");
 
         try
         {
@@ -58,7 +59,7 @@ public class ContentsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        await _mediator.Send(new DeleteContentCommand(id));
+        await _mediator.Send(new DeleteContentCommand((ContentId)id));
         return NoContent();
     }
 }

@@ -18,15 +18,7 @@ internal class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand,
     public async Task<string?> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
         var result = await _userAuthService.CreateUserAsync(request.UserName, request.Email, request.Password);
-
-        if (request.UserName == "RedSky")
-        {
-            await _userAuthService.AddToRoleAsync(result.Id.ToString(), UserRoles.Admin);
-        }
-        else
-        {
-            await _userAuthService.AddToRoleAsync(result.Id.ToString(), UserRoles.User);
-        }
+        await _userAuthService.AddToRoleAsync(result.Id.ToString(), UserRoles.User);
 
         var domainUser = User.CreateFromAppUser(result.Id, result.Username, result.Email);
         await _userRepository.AddAsync(domainUser);

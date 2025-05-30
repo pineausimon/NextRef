@@ -2,10 +2,11 @@
 using NextRef.Application.Contents.Services;
 using NextRef.Domain.Contents.Models;
 using NextRef.Domain.Contents.Repositories;
+using NextRef.Domain.Core.Ids;
 
 namespace NextRef.Application.Contents.Commands.CreateContent;
 
-internal class CreateContentHandler : IRequestHandler<CreateContentCommand, Guid>
+internal class CreateContentHandler : IRequestHandler<CreateContentCommand, ContentId>
 {
     private readonly IContentRepository _repository;
     private readonly IContributionService _contributionService;
@@ -16,7 +17,7 @@ internal class CreateContentHandler : IRequestHandler<CreateContentCommand, Guid
         _contributionService = contributionService;
     }
 
-    public async Task<Guid> Handle(CreateContentCommand request, CancellationToken cancellationToken)
+    public async Task<ContentId> Handle(CreateContentCommand request, CancellationToken cancellationToken)
     {
         var content = Content.Create(request.Title, request.Type, request.PublishedAt, request.Description);
         await _repository.AddAsync(content);

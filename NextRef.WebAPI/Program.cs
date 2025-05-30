@@ -3,6 +3,7 @@ using NextRef.Application;
 using NextRef.Infrastructure;
 using NextRef.Infrastructure.DataAccess.Migrations;
 using NextRef.Infrastructure.Identity;
+using NextRef.Infrastructure.Serialization;
 using NextRef.WebAPI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,9 +25,11 @@ builder.Services.AddSwaggerWithJwt();
 builder.Services.AddAuthorizationPolicies();
 builder.Services.AddCustomCors();
 
-builder.Services.AddControllers(); 
-
-
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.AddStronglyTypedIdConverters();
+    });
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -40,6 +43,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseGlobalExceptionHandling();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -48,7 +52,7 @@ app.UseHttpsRedirection();
 app.UseCustomCors();
 
 app.MapControllers();
-
+    
 using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();

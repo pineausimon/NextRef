@@ -1,12 +1,13 @@
-﻿using NextRef.Domain.UserCollections.Models;
+﻿using NextRef.Domain.Core.Ids;
+using NextRef.Domain.UserCollections.Models;
 
 namespace NextRef.Domain.UserCollections.Repositories;
 public interface IUserCollectionItemRepository
 {
-    Task<UserCollectionItem?> GetByIdAsync(Guid id);
-    Task<IEnumerable<UserCollectionItem>> GetByCollectionIdAsync(Guid collectionId);
+    Task<UserCollectionItem?> GetByIdAsync(UserCollectionItemId id);
+    Task<IEnumerable<UserCollectionItem>> GetByCollectionIdAsync(UserCollectionId collectionId);
     Task AddAsync(UserCollectionItem item);
     Task UpdateAsync(UserCollectionItem item);
-    Task DeleteAsync(Guid id);
-    Task<bool> ExistsAsync(Guid collectionId, Guid contentId);
+    Task DeleteAsync(UserCollectionItemId id);
+    Task<bool> ExistsAsync(UserCollectionId collectionId, ContentId contentId);
 }

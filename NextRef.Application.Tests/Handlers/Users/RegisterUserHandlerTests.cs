@@ -43,33 +43,6 @@ public class RegisterUserHandlerTests
 
         _userAuthServiceMock.Verify(x => x.AddToRoleAsync(appUserResult.Id.ToString(), UserRoles.User), Times.Once);
         _userRepositoryMock.Verify(x => x.AddAsync(It.Is<User>(u =>
-            u.Id == appUserResult.Id && u.UserName == appUserResult.Username && u.Email == appUserResult.Email)), Times.Once);
-    }
-
-    [Fact]
-    public async Task Handle_ShouldAssignAdminRole_WhenUsernameIsRedSky()
-    {
-        // Arrange
-        var command = new RegisterUserCommand("RedSky", "admin@example.com", "StrongPassword!");
-
-        var appUserResult = new AppUserDto(Guid.NewGuid(), "RedSky", "admin@example.com");
-        var token = "admin.jwt.token";
-
-        _userAuthServiceMock
-            .Setup(x => x.CreateUserAsync(command.UserName, command.Email, command.Password))
-            .ReturnsAsync(appUserResult);
-
-        _userAuthServiceMock
-            .Setup(x => x.GenerateTokenForUserAsync(appUserResult.Username))
-            .ReturnsAsync(token);
-
-        // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        Assert.Equal(token, result);
-
-        _userAuthServiceMock.Verify(x => x.AddToRoleAsync(appUserResult.Id.ToString(), UserRoles.Admin), Times.Once);
-        _userRepositoryMock.Verify(x => x.AddAsync(It.IsAny<User>()), Times.Once);
+            u.Id.Value == appUserResult.Id && u.UserName == appUserResult.Username && u.Email == appUserResult.Email)), Times.Once);
     }
 }

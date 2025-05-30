@@ -1,15 +1,17 @@
-﻿namespace NextRef.Domain.Contents.Models
+﻿using NextRef.Domain.Core.Ids;
+
+namespace NextRef.Domain.Contents.Models
 {
     public class ContentMention
     {
-        public Guid Id { get; private set; }
-        public Guid SourceContentId { get; private set; }
-        public Guid TargetContentId { get; private set; }
+        public ContentMentionId Id { get; private set; }
+        public ContentId SourceContentId { get; private set; }
+        public ContentId TargetContentId { get; private set; }
         public string Context { get; private set; }
 
         private ContentMention() { }
 
-        private ContentMention(Guid id, Guid sourceContentId, Guid targetContentId, string context)
+        private ContentMention(ContentMentionId id, ContentId sourceContentId, ContentId targetContentId, string context)
         {
             Id = id;
             SourceContentId = sourceContentId;
@@ -17,16 +19,16 @@
             Context = context;
         }
 
-        public static ContentMention Create(Guid sourceContentId, Guid targetContentId, string context)
+        public static ContentMention Create(ContentId sourceContentId, ContentId targetContentId, string context)
         {
             return new ContentMention(
-                Guid.NewGuid(),
+                ContentMentionId.New(), 
                 sourceContentId,
                 targetContentId,
                 context);
         }
 
-        public static ContentMention Rehydrate(Guid id, Guid sourceContentId, Guid targetContentId, string context)
+        public static ContentMention Rehydrate(ContentMentionId id, ContentId sourceContentId, ContentId targetContentId, string context)
         {
             return new ContentMention(id, sourceContentId, targetContentId, context);
         }

@@ -1,8 +1,9 @@
 ﻿using MediatR;
+using NextRef.Domain.Core.Ids;
 
 namespace NextRef.Application.Contents.Commands.CreateContentMention;
 
 public record CreateContentMentionCommand(
-    Guid SourceContentId,
-    Guid TargetContentId,
-    string Context) : IRequest<Guid>;
+    ContentId SourceContentId,
+    ContentId TargetContentId,
+    string Context) : IRequest<ContentMentionId>;

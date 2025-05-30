@@ -1,13 +1,15 @@
-﻿namespace NextRef.Domain.Contents.Models
+﻿using NextRef.Domain.Core.Ids;
+
+namespace NextRef.Domain.Contents.Models
 {
     public class Contribution
     {
-        public Guid Id { get; private set; }
-        public Guid ContributorId { get; private set; }
-        public Guid ContentId { get; private set; }
+        public ContributionId Id { get; private set; }
+        public ContributorId ContributorId { get; private set; }
+        public ContentId ContentId { get; private set; }
         public string Role { get; private set; }
 
-        private Contribution(Guid id, Guid contributorId, Guid contentId, string role)
+        private Contribution(ContributionId id, ContributorId contributorId, ContentId contentId, string role)
         {
             Id = id;
             ContributorId = contributorId;
@@ -15,19 +17,19 @@
             Role = role;
         }
 
-        public static Contribution Create(Guid contributorId, Guid contentId, string role)
+        public static Contribution Create(ContributorId contributorId, ContentId contentId, string role)
         {
             if (string.IsNullOrWhiteSpace(role))
                 throw new ArgumentException("Role cannot be empty", nameof(role));
 
             return new Contribution(
-                Guid.NewGuid(),
+                ContributionId.New(), 
                 contributorId,
                 contentId,
                 role);
         }
 
-        public static Contribution Rehydrate(Guid id, Guid contributorId, Guid contentId, string role)
+        public static Contribution Rehydrate(ContributionId id, ContributorId contributorId, ContentId contentId, string role)
         {
             return new Contribution(id, contributorId, contentId, role);
         }

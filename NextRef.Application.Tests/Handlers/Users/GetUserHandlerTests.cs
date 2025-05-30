@@ -1,5 +1,6 @@
 ﻿using Moq;
 using NextRef.Application.Users.Queries.GetUser;
+using NextRef.Domain.Core.Ids;
 using NextRef.Domain.Users;
 
 namespace NextRef.Application.Tests.Handlers.Users;
@@ -18,10 +19,10 @@ public class GetUserHandlerTests
     public async Task Handle_UserNotFound_ThrowsNullReferenceException()
     {
         // Arrange
-        _userRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
+        _userRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<UserId>()))
             .ReturnsAsync((User?)null);
 
-        var query = new GetUserQuery(Guid.NewGuid());
+        var query = new GetUserQuery(UserId.New());
 
         // Act & Assert
         await Assert.ThrowsAsync<NullReferenceException>(() =>
@@ -32,7 +33,7 @@ public class GetUserHandlerTests
     public async Task Handle_UserFound_ReturnsUserDto()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = UserId.New();
         var user = User.Rehydrate(userId, "testUser", "test@example.com");
 
         _userRepositoryMock.Setup(r => r.GetByIdAsync(userId))
