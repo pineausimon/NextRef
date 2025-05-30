@@ -18,4 +18,9 @@
       <ProjectReference Include="..\NextRef.Domain\NextRef.Domain.csproj" />
     </ItemGroup>
 
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>NextRef.Application.Tests</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
 </Project>

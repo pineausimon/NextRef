@@ -5,7 +5,7 @@ using NextRef.Domain.Contents.Repositories;
 
 namespace NextRef.Application.Contents.Commands.CreateContent;
 
-public class CreateContentHandler : IRequestHandler<CreateContentCommand, Guid>
+internal class CreateContentHandler : IRequestHandler<CreateContentCommand, Guid>
 {
     private readonly IContentRepository _repository;
     private readonly IContributionService _contributionService;

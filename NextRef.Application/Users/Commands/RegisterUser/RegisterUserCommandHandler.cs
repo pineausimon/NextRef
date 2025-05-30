@@ -4,7 +4,7 @@ using NextRef.Application.Users.Services;
 using NextRef.Domain.Core;
 
 namespace NextRef.Application.Users.Commands.RegisterUser;
-public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, string?>
+internal class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, string?>
 {
     private readonly IUserRepository _userRepository;
     private readonly IUserAuthService _userAuthService;

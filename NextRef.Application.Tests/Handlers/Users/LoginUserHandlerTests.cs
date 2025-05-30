@@ -26,7 +26,7 @@ public class LoginUserHandlerTests
 
         _userAuthServiceMock
             .Setup(s => s.CheckPasswordSignInAsync(command.UserName, command.Password, false))
-            .ReturnsAsync(SignInResult.Success);
+            .ReturnsAsync(true);
 
         _userAuthServiceMock
             .Setup(s => s.GenerateTokenForUserAsync(command.UserName))
@@ -49,7 +49,7 @@ public class LoginUserHandlerTests
 
         _userAuthServiceMock
             .Setup(s => s.CheckPasswordSignInAsync(command.UserName, command.Password, false))
-            .ReturnsAsync(SignInResult.Failed);
+            .ReturnsAsync(false);
 
         // Act & Assert
         await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _handler.Handle(command, CancellationToken.None));

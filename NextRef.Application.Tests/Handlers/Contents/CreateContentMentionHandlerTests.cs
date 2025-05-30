@@ -1,0 +1,48 @@
+﻿using Moq;
+using NextRef.Application.Contents.Commands.CreateContentMention;
+using NextRef.Domain.Contents.Models;
+using NextRef.Domain.Contents.Repositories;
+
+namespace NextRef.Application.Tests.Handlers.Contents;
+public class CreateContentMentionHandlerTests
+{
+    private readonly Mock<IContentMentionRepository> _contentMentionRepositoryMock;
+    private readonly CreateContentMentionCommandHandler _handler;
+
+    public CreateContentMentionHandlerTests()
+    {
+        _contentMentionRepositoryMock = new Mock<IContentMentionRepository>();
+        _handler = new CreateContentMentionCommandHandler(_contentMentionRepositoryMock.Object);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldCreateContentMentionAndReturnId()
+    {
+        // Arrange
+        var sourceId = Guid.NewGuid();
+        var targetId = Guid.NewGuid();
+        var context = "Recommendation pour compléter le sujet de ce chapitre";
+
+        ContentMention? savedMention = null;
+
+        _contentMentionRepositoryMock
+            .Setup(r => r.AddAsync(It.IsAny<ContentMention>()))
+            .Callback<ContentMention>(cm => savedMention = cm)
+            .Returns(Task.CompletedTask);
+
+        var command = new CreateContentMentionCommand(sourceId, targetId, context);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _contentMentionRepositoryMock.Verify(r => r.AddAsync(It.IsAny<ContentMention>()), Times.Once);
+
+        Assert.NotEqual(Guid.Empty, result);
+        Assert.NotNull(savedMention);
+        Assert.Equal(result, savedMention!.Id);
+        Assert.Equal(sourceId, savedMention.SourceContentId);
+        Assert.Equal(targetId, savedMention.TargetContentId);
+        Assert.Equal(context, savedMention.Context);
+    }
+}

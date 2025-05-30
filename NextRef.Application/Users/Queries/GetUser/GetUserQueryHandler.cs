@@ -3,7 +3,7 @@ using NextRef.Domain.Users;
 using NextRef.Application.Users.Models;
 
 namespace NextRef.Application.Users.Queries.GetUser;
-public class GetUserQueryHandler : IRequestHandler<GetUserQuery, UserDto>
+internal class GetUserQueryHandler : IRequestHandler<GetUserQuery, UserDto>
 {
     private readonly IUserRepository _userRepository;
 

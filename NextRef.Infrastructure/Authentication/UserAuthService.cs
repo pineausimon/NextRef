@@ -16,14 +16,15 @@ public class UserAuthService : IUserAuthService
         _tokenService = tokenService;
     }
 
-    public async Task<SignInResult> CheckPasswordSignInAsync(string userName, string password, bool lockoutOnFailure)
+    public async Task<bool> CheckPasswordSignInAsync(string userName, string password, bool lockoutOnFailure)
     {
         var user = await _userManager.FindByNameAsync(userName);
 
         if (user == null)
             throw new UnauthorizedAccessException("Invalid credentials");
 
-        return await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure);
+        var signInResult = await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure);
+        return signInResult.Succeeded;
     }
 
     public async Task<AppUserDto> CreateUserAsync(string username, string email, string password)

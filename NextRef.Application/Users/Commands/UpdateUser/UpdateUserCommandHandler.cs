@@ -3,7 +3,7 @@ using NextRef.Domain.Users;
 using NextRef.Application.Users.Models;
 
 namespace NextRef.Application.Users.Commands.UpdateUser;
-public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, UserDto>
+internal class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, UserDto>
 {
     private readonly IUserRepository _userRepository;
 

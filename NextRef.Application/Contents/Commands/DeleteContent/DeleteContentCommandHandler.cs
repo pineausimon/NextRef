@@ -2,7 +2,7 @@
 using NextRef.Domain.Contents.Repositories;
 
 namespace NextRef.Application.Contents.Commands.DeleteContent;
-public class DeleteContentHandler : IRequestHandler<DeleteContentCommand>
+internal class DeleteContentHandler : IRequestHandler<DeleteContentCommand>
 {
     private readonly IContentRepository _repository;
 
