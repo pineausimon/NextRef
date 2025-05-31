@@ -1,87 +1,64 @@
 ﻿using Moq;
-using NextRef.Application.Contents.Models;
 using NextRef.Application.Contents.Queries.SearchContents;
-using NextRef.Domain.Contents.Models;
+using NextRef.Application.Contents.Models;
 using NextRef.Domain.Contents.Repositories;
+using NextRef.Application.Caching;
+using NextRef.Domain.Contents.Models;
 
-namespace NextRef.Application.Tests.Handlers.Contents;
 public class SearchContentsHandlerTests
 {
-    private readonly Mock<IContentRepository> _repositoryMock;
-    private readonly SearchContentsQueryHandler _handler;
+    private readonly Mock<IContentRepository> _repoMock = new();
+    private readonly Mock<ICacheService> _cacheMock = new();
 
-    public SearchContentsHandlerTests()
-    {
-        _repositoryMock = new Mock<IContentRepository>();
-        _handler = new SearchContentsQueryHandler(_repositoryMock.Object);
-    }
+    private SearchContentsQueryHandler CreateHandler() =>
+        new(_repoMock.Object, _cacheMock.Object);
 
     [Fact]
-    public async Task Handle_ShouldReturnMappedDtos_WhenContentsAreFound()
+    public async Task Handle_ReturnsFromCache_IfPresent()
     {
         // Arrange
-        var keyword = "AI";
-        var sortBy = "title";
-        var limit = 10;
+        var query = new SearchContentsQuery("test","title", 10, 1);
+        var cachedResult = new List<ContentDto> { new ContentDto { Title = "FromCache" } };
+        _cacheMock.Setup(c => c.GetAsync<IReadOnlyList<ContentDto>>(It.IsAny<string>()))
+                  .ReturnsAsync(cachedResult);
 
-        var contents = new List<Content>
-        {
-            Content.Create("AI and Society", "desc1", DateTime.UtcNow, ""),
-            Content.Create("Deep Learning", "desc2", DateTime.UtcNow, "")
-        };
-
-        _repositoryMock
-            .Setup(repo => repo.SearchAsync(keyword, sortBy, limit, 1))
-            .ReturnsAsync(contents);
-
-        var request = new SearchContentsQuery(keyword, sortBy, limit);
+        var handler = CreateHandler();
 
         // Act
-        var result = await _handler.Handle(request, CancellationToken.None);
+        var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
-        Assert.Equal(contents.Count, result.Count);
-        Assert.All(result, dto => Assert.IsType<ContentDto>(dto));
-
-        _repositoryMock.Verify(repo => repo.SearchAsync(keyword, sortBy, limit, 1), Times.Once);
+        Assert.Equal(cachedResult, result);
+        _repoMock.Verify(r => r.SearchAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<int?>()), Times.Never);
+        _cacheMock.Verify(c => c.SetAsync(It.IsAny<string>(), It.IsAny<IReadOnlyList<ContentDto>>(), null), Times.Never);
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnEmptyList_WhenNoContentsAreFound()
+    public async Task Handle_QueriesRepositoryAndCaches_IfCacheMiss()
     {
         // Arrange
-        _repositoryMock
-            .Setup(repo => repo.SearchAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
-            .ReturnsAsync(new List<Content>());
+        var query = new SearchContentsQuery("test", "title", 10, 1);
+        _cacheMock.Setup(c => c.GetAsync<IReadOnlyList<ContentDto>>(It.IsAny<string>()))
+                  .ReturnsAsync((IReadOnlyList<ContentDto>?)null);
 
-        var request = new SearchContentsQuery("notfound", "title", 5);
+        var repoResult = new List<Content>
+        {
+            Content.Create("Title1", "Type1", System.DateTime.UtcNow, "desc")
+        };
+        _repoMock.Setup(r => r.SearchAsync(query.Keyword, query.SortBy, query.Limit, query.Page))
+                 .ReturnsAsync(repoResult);
+
+        var handler = CreateHandler();
 
         // Act
-        var result = await _handler.Handle(request, CancellationToken.None);
+        var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
         Assert.NotNull(result);
-        Assert.Empty(result);
-    }
+        Assert.Single(result);
+        Assert.Equal("Title1", result[0].Title);
 
-    [Fact]
-    public async Task Handle_ShouldPassCorrectArgumentsToRepository()
-    {
-        // Arrange
-        var keyword = "neural";
-        var sortBy = "createdAt";
-        var limit = 3;
-
-        var request = new SearchContentsQuery(keyword, sortBy, limit);
-
-        _repositoryMock
-            .Setup(repo => repo.SearchAsync(keyword, sortBy, limit, 1))
-            .ReturnsAsync(new List<Content>());
-
-        // Act
-        await _handler.Handle(request, CancellationToken.None);
-
-        // Assert
-        _repositoryMock.Verify(repo => repo.SearchAsync(keyword, sortBy, limit, 1), Times.Once);
+        _repoMock.Verify(r => r.SearchAsync(query.Keyword, query.SortBy, query.Limit, query.Page), Times.Once);
+        _cacheMock.Verify(c => c.SetAsync(It.IsAny<string>(), It.IsAny<IReadOnlyList<ContentDto>>(), null), Times.Once);
     }
 }

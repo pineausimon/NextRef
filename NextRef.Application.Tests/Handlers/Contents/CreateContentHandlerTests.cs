@@ -1,4 +1,5 @@
 ﻿using Moq;
+using NextRef.Application.Caching;
 using NextRef.Application.Contents.Commands.CreateContent;
 using NextRef.Application.Contents.Models;
 using NextRef.Application.Contents.Services;
@@ -11,11 +12,12 @@ public class CreateContentHandlerTests
 {
     private readonly Mock<IContentRepository> _contentRepositoryMock = new();
     private readonly Mock<IContributionService> _contributionServiceMock = new();
+    private readonly Mock<ICacheService> _cacheMock = new();
     private readonly CreateContentHandler _handler;
 
     public CreateContentHandlerTests()
     {
-        _handler = new CreateContentHandler(_contentRepositoryMock.Object, _contributionServiceMock.Object);
+        _handler = new CreateContentHandler(_contentRepositoryMock.Object, _contributionServiceMock.Object, _cacheMock.Object);
     }
 
     [Fact]
@@ -46,6 +48,8 @@ public class CreateContentHandlerTests
         _contributionServiceMock
             .Setup(s => s.AddContributionsAsync(It.IsAny<ContentId>(), command.ExistingContributions, command.NewContributions))
             .Returns(Task.CompletedTask);
+        _cacheMock.Setup(c => c.RemoveByPatternAsync(It.IsAny<string>())).Returns(Task.CompletedTask);
+
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -59,6 +63,7 @@ public class CreateContentHandlerTests
 
         _contentRepositoryMock.Verify(r => r.AddAsync(It.IsAny<Content>()), Times.Once);
         _contributionServiceMock.Verify(s => s.AddContributionsAsync(createdContent.Id, command.ExistingContributions, command.NewContributions), Times.Once);
+        _cacheMock.Verify(c => c.RemoveByPatternAsync("content_search:*"), Times.Once);
     }
 
     [Fact]
@@ -80,6 +85,7 @@ public class CreateContentHandlerTests
         _contributionServiceMock
             .Setup(s => s.AddContributionsAsync(It.IsAny<ContentId>(), new List<ContributionWithExistingContributorDto>(), new List<ContributionWithNewContributorDto>()))
             .Returns(Task.CompletedTask);
+        _cacheMock.Setup(c => c.RemoveByPatternAsync(It.IsAny<string>())).Returns(Task.CompletedTask);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -88,6 +94,7 @@ public class CreateContentHandlerTests
         Assert.NotEqual(Guid.Empty, result.Value);
         _contentRepositoryMock.Verify(r => r.AddAsync(It.IsAny<Content>()), Times.Once);
         _contributionServiceMock.Verify(s => s.AddContributionsAsync(It.IsAny<ContentId>(), new List<ContributionWithExistingContributorDto>(), new List<ContributionWithNewContributorDto>()), Times.Once);
+        _cacheMock.Verify(c => c.RemoveByPatternAsync("content_search:*"), Times.Once);
     }
 
 }

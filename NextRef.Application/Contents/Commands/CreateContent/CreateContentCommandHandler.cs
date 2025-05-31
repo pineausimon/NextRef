@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using NextRef.Application.Caching;
 using NextRef.Application.Contents.Services;
 using NextRef.Domain.Contents.Models;
 using NextRef.Domain.Contents.Repositories;
@@ -10,11 +11,13 @@ internal class CreateContentHandler : IRequestHandler<CreateContentCommand, Cont
 {
     private readonly IContentRepository _repository;
     private readonly IContributionService _contributionService;
+    private readonly ICacheService _cacheService;
 
-    public CreateContentHandler(IContentRepository repository, IContributionService contributionService)
+    public CreateContentHandler(IContentRepository repository, IContributionService contributionService, ICacheService cacheService)
     {
         _repository = repository;
         _contributionService = contributionService;
+        _cacheService = cacheService;
     }
 
     public async Task<ContentId> Handle(CreateContentCommand request, CancellationToken cancellationToken)
@@ -25,6 +28,8 @@ internal class CreateContentHandler : IRequestHandler<CreateContentCommand, Cont
 
         await _contributionService.AddContributionsAsync(
             content.Id, request.ExistingContributions, request.NewContributions);
+
+        await _cacheService.RemoveByPatternAsync("content_search:*");
 
         return content.Id;
     }

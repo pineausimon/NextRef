@@ -17,5 +17,6 @@
     &lt;TestId&gt;xUnit::78F77A96-746D-443F-8202-5E0C5D1079A3::net9.0::NextRef.Application.Tests.Handlers.Contents.CreateContentMentionHandlerTests&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;xUnit::78F77A96-746D-443F-8202-5E0C5D1079A3::net9.0::NextRef.Application.Tests.Handlers.UserCollections.AddContentToCollectionCommandHandlerTests&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;xUnit::78F77A96-746D-443F-8202-5E0C5D1079A3::net9.0::NextRef.Application.Tests.Handlers.Contents.SearchContentsHandlerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::78F77A96-746D-443F-8202-5E0C5D1079A3::net9.0::UpdateContentHandlerTests&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

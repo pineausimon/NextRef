@@ -19,7 +19,10 @@ public class ContentRepository : IContentRepository
     {
         using var connection = _context.CreateConnection();
 
-        // ORDER BY clause based on sortBy parameter
+        int pageSize = limit ?? 20;
+        int offset = ((page ?? 1) - 1) * pageSize;
+
+        // Sécurisation du tri
         string orderBy = sortBy?.ToLower() switch
         {
             "title" => "Title ASC",
@@ -28,33 +31,27 @@ public class ContentRepository : IContentRepository
             _ => "CreatedAt DESC"
         };
 
-        // Pagination
-        int pageSize = limit ?? 20;
-        int offset = ((page ?? 1) - 1) * pageSize;
-
-        // WHERE clause for keyword search
-        string whereClause = "";
         var parameters = new DynamicParameters();
+        parameters.Add("offset", offset);
+        parameters.Add("pageSize", pageSize);
 
+        string whereClause = "";
         if (!string.IsNullOrWhiteSpace(keyword))
         {
             whereClause = "WHERE (Title LIKE @kw OR Description LIKE @kw)";
             parameters.Add("kw", $"%{keyword}%");
         }
+        // TODO : Create SQL View tu perform search on, to search on authors and other fields
 
-        // SQL query to fetch contents with pagination and sorting
         string sql = $@"
-            SELECT *
-            FROM Core.Contents
-            {whereClause}
-            ORDER BY {orderBy}
-            OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY";
+        SELECT *
+        FROM Core.Contents
+        {whereClause}
+        ORDER BY {orderBy}
+        OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY";
 
-        parameters.Add("offset", offset);
-        parameters.Add("pageSize", pageSize);
-
+        // Mapping Dapper -> ContentEntity -> Domaine
         var entities = await connection.QueryAsync<ContentEntity>(sql, parameters);
-
         return entities.Select(ContentMapper.ToDomain).ToList();
     }
 

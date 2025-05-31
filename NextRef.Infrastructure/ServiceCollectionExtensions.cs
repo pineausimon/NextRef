@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using NextRef.Application.Caching;
 using NextRef.Domain.Users;
 using NextRef.Infrastructure.DataAccess.Configuration;
 using NextRef.Infrastructure.DataAccess.Repositories;
@@ -9,6 +10,8 @@ using NextRef.Infrastructure.Authentication;
 using NextRef.Domain.Contents.Repositories;
 using NextRef.Domain.UserCollections.Repositories;
 using NextRef.Application.Users.Services;
+using NextRef.Infrastructure.Caching.Redis;
+using StackExchange.Redis;
 
 namespace NextRef.Infrastructure;
 
@@ -17,7 +20,9 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection")!;
+        var redisConnection = configuration.GetConnectionString("Redis") ?? "localhost:6379";
 
+        services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnection));
         services.AddDbContext<AuthDbContext>(options =>
             options.UseSqlServer(connectionString));
 
@@ -45,6 +50,8 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IUserAuthService, UserAuthService>();
         services.AddScoped<ITokenService, TokenService>();
+
+        services.AddSingleton<ICacheService, RedisCacheService>();
 
         return services;
     }
