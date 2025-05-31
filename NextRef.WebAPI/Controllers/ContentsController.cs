@@ -5,6 +5,7 @@ using NextRef.Application.Contents.Commands.CreateContent;
 using NextRef.Application.Contents.Commands.DeleteContent;
 using NextRef.Application.Contents.Commands.UpdateContent;
 using NextRef.Application.Contents.Queries.GetContentById;
+using NextRef.Application.Contents.Queries.SearchContents;
 using NextRef.Domain.Core;
 using NextRef.Domain.Core.Ids;
 
@@ -19,6 +20,14 @@ public class ContentsController : ControllerBase
     public ContentsController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    [Authorize(Policy = "UserOrAdmin")]
+    [HttpPost("search")]
+    public async Task<IActionResult> Search([FromBody] SearchContentsQuery query)
+    {
+        var results = await _mediator.Send(query);
+        return Ok(results);
     }
 
     [Authorize(Policy = "UserOrAdmin")]

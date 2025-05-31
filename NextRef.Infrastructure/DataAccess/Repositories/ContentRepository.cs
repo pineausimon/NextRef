@@ -15,6 +15,48 @@ public class ContentRepository : IContentRepository
     {
         _context = context;
     }
+    public async Task<IReadOnlyList<Content>> SearchAsync(string? keyword, string? sortBy, int? limit, int? page = 1)
+    {
+        using var connection = _context.CreateConnection();
+
+        // ORDER BY clause based on sortBy parameter
+        string orderBy = sortBy?.ToLower() switch
+        {
+            "title" => "Title ASC",
+            "publishedat" => "PublishedAt DESC",
+            "createdat" => "CreatedAt DESC",
+            _ => "CreatedAt DESC"
+        };
+
+        // Pagination
+        int pageSize = limit ?? 20;
+        int offset = ((page ?? 1) - 1) * pageSize;
+
+        // WHERE clause for keyword search
+        string whereClause = "";
+        var parameters = new DynamicParameters();
+
+        if (!string.IsNullOrWhiteSpace(keyword))
+        {
+            whereClause = "WHERE (Title LIKE @kw OR Description LIKE @kw)";
+            parameters.Add("kw", $"%{keyword}%");
+        }
+
+        // SQL query to fetch contents with pagination and sorting
+        string sql = $@"
+            SELECT *
+            FROM Core.Contents
+            {whereClause}
+            ORDER BY {orderBy}
+            OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY";
+
+        parameters.Add("offset", offset);
+        parameters.Add("pageSize", pageSize);
+
+        var entities = await connection.QueryAsync<ContentEntity>(sql, parameters);
+
+        return entities.Select(ContentMapper.ToDomain).ToList();
+    }
 
     public async Task<Content?> GetByIdAsync(ContentId id)
     {
