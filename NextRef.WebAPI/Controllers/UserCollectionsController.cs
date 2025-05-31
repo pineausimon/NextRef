@@ -1,12 +1,13 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NextRef.Application.UserCollections.Commands.AddContentToCollection;
 using NextRef.Application.UserCollections.Commands.CreateCollection;
 using NextRef.Application.UserCollections.Queries.GetUserCollections;
 using NextRef.Domain.Core.Ids;
 
 namespace NextRef.WebAPI.Controllers;
-[Route("api/[controller]")]
+[Route("api/collections")]
 [ApiController]
 public class UserCollectionsController : ControllerBase
 {
@@ -17,12 +18,12 @@ public class UserCollectionsController : ControllerBase
     }
 
     [Authorize(Policy = "UserOrAdmin")]
-    [HttpGet("{id}")]
-    public async Task<IActionResult> Get(Guid id)
+    [HttpGet("{userId}")]
+    public async Task<IActionResult> Get(Guid userId)
     {
-        var content = await _mediator.Send(new GetUserCollectionsQuery((UserId)id));
-        if (content == null) return NotFound();
-        return Ok(content);
+        var userCollections = await _mediator.Send(new GetUserCollectionsQuery((UserId)userId));
+        if (userCollections == null) return NotFound();
+        return Ok(userCollections);
     }
 
     [Authorize(Policy = "UserOrAdmin")]
@@ -31,5 +32,13 @@ public class UserCollectionsController : ControllerBase
     {
         var newId = await _mediator.Send(command);
         return CreatedAtAction(nameof(Create), new { id = newId }, new { id = newId });
+    }
+
+    [Authorize(Policy = "UserOrAdmin")]
+    [HttpPost("/{collectionId}/items")]
+    public async Task<IActionResult> AddContentToCollection(Guid collectionId, AddContentToCollectionCommand command)
+    {
+        var newId = await _mediator.Send(command);
+        return CreatedAtAction(nameof(AddContentToCollection), new { id = newId }, new { id = newId });
     }
 }

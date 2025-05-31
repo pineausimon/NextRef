@@ -21,7 +21,7 @@ public class ContentsController : ControllerBase
         _mediator = mediator;
     }
 
-    [AllowAnonymous]
+    [Authorize(Policy = "UserOrAdmin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(Guid id)
     {
