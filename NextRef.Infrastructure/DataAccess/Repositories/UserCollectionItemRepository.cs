@@ -18,7 +18,7 @@ public class UserCollectionItemRepository : IUserCollectionItemRepository
 
     public async Task<UserCollectionItem?> GetByIdAsync(UserCollectionItemId id)
     {
-        const string query = "SELECT * FROM UserCollectionItems WHERE Id = @Id";
+        const string query = "SELECT * FROM Core.UserCollectionItems WHERE Id = @Id";
 
         using var connection = _context.CreateConnection();
         var entity = await connection.QuerySingleOrDefaultAsync<UserCollectionItemEntity>(query, new { Id = id.Value });
@@ -27,7 +27,7 @@ public class UserCollectionItemRepository : IUserCollectionItemRepository
 
     public async Task<IEnumerable<UserCollectionItem>> GetByCollectionIdAsync(UserCollectionId collectionId)
     {
-        const string query = "SELECT * FROM UserCollectionItems WHERE CollectionId = @CollectionId";
+        const string query = "SELECT * FROM Core.UserCollectionItems WHERE CollectionId = @CollectionId";
 
         using var connection = _context.CreateConnection();
         var entities = await connection.QueryAsync<UserCollectionItemEntity>(query, new { CollectionId = collectionId.Value });
@@ -36,8 +36,8 @@ public class UserCollectionItemRepository : IUserCollectionItemRepository
 
     public async Task AddAsync(UserCollectionItem item)
     {const string query = @"
-            INSERT INTO UserCollectionItems (Id, CollectionId, ContentId, Status, AddedAt, CreatedAt, UpdatedAt)
-            VALUES (@Id, @CollectionId, @ContentId, @Status, @AddedAt, @CreatedAt, @UpdatedAt)";
+            INSERT INTO Core.UserCollectionItems (Id, CollectionId, ContentId, Status, AddedAt)
+            VALUES (@Id, @CollectionId, @ContentId, @Status, @AddedAt)";
 
         using var connection = _context.CreateConnection();
         var added = await connection.ExecuteAsync(query, new
@@ -46,9 +46,7 @@ public class UserCollectionItemRepository : IUserCollectionItemRepository
             CollectionId = item.CollectionId.Value,
             ContentId = item.ContentId.Value,
             item.Status,
-            item.AddedAt,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
+            item.AddedAt
         });
 
         if (added == 0)
@@ -58,8 +56,8 @@ public class UserCollectionItemRepository : IUserCollectionItemRepository
     public async Task UpdateAsync(UserCollectionItem item)
     {
         const string query = @"
-            UPDATE UserCollectionItems
-            SET Status = @Status, UpdatedAt = @UpdatedAt
+            UPDATE Core.UserCollectionItems
+            SET Status = @Status
             WHERE Id = @Id";
 
         using var connection = _context.CreateConnection();
@@ -77,7 +75,7 @@ public class UserCollectionItemRepository : IUserCollectionItemRepository
 
     public async Task DeleteAsync(UserCollectionItemId id)
     {
-        const string query = "DELETE FROM UserCollectionItems WHERE Id = @Id";
+        const string query = "DELETE FROM Core.UserCollectionItems WHERE Id = @Id";
 
         using var connection = _context.CreateConnection();
         await connection.ExecuteAsync(query, new { Id = id.Value });
@@ -87,7 +85,7 @@ public class UserCollectionItemRepository : IUserCollectionItemRepository
     {
         const string query = @"
             SELECT COUNT(1)
-            FROM UserCollectionItems
+            FROM Core.UserCollectionItems
             WHERE CollectionId = @CollectionId AND ContentId = @ContentId";
 
         using var connection = _context.CreateConnection();

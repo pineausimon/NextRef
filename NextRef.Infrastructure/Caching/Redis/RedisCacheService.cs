@@ -1,10 +1,13 @@
 ﻿using StackExchange.Redis;
 using System.Text.Json;
 using NextRef.Application.Caching;
+using NextRef.Infrastructure.Serialization;
 
 namespace NextRef.Infrastructure.Caching.Redis;
 public class RedisCacheService : ICacheService
 {
+    private static readonly JsonSerializerOptions _jsonOptions = JsonOptionsFactory.Create();
+
     private readonly IDatabase _cache;
     private readonly IConnectionMultiplexer _redis;
 
@@ -18,12 +21,13 @@ public class RedisCacheService : ICacheService
     {
         var cached = await _cache.StringGetAsync(cacheKey);
         if (cached.IsNullOrEmpty) return default;
-        return JsonSerializer.Deserialize<T>(cached);
+        return JsonSerializer.Deserialize<T>(cached, _jsonOptions);
+
     }
 
     public async Task SetAsync<T>(string cacheKey, T data, TimeSpan? expiry = null)
     {
-        var json = JsonSerializer.Serialize(data);
+        var json = JsonSerializer.Serialize(data, _jsonOptions);
         await _cache.StringSetAsync(cacheKey, json, expiry ?? TimeSpan.FromMinutes(5));
     }
 

@@ -15,9 +15,8 @@ public static class ServiceCollectionExtensions
         {
             cfg.RegisterServicesFromAssemblyContaining<CreateContentCommand>();
             cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+            cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
         });
-
-        //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
         services.AddScoped<IContributionService, ContributionService>();
 

@@ -5,20 +5,6 @@ using NextRef.Infrastructure.DataAccess.Entities;
 namespace NextRef.Infrastructure.DataAccess.Mappers;
 public static class UserCollectionItemMapper
 {
-    //public static UserCollectionItemEntity FromDomain(UserCollectionItem domain)
-    //{
-    //    return new UserCollectionItemEntity
-    //    {
-    //        Id = domain.Id,
-    //        CollectionId = domain.CollectionId,
-    //        ContentId = domain.ContentId,
-    //        Status = domain.Status.ToString(),
-    //        AddedAt = domain.AddedAt,
-    //        CreatedAt = DateTime.UtcNow,
-    //        UpdatedAt = DateTime.UtcNow
-    //    };
-    //}
-
     public static UserCollectionItem ToDomain(this UserCollectionItemEntity entity)
     {
         // TODO : Handle UserCollectionItemStatus later, use new extensions methods to parse enum 

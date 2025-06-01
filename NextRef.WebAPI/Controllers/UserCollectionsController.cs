@@ -35,7 +35,7 @@ public class UserCollectionsController : ControllerBase
     }
 
     [Authorize(Policy = "UserOrAdmin")]
-    [HttpPost("/{collectionId}/items")]
+    [HttpPost("{collectionId}/items")]
     public async Task<IActionResult> AddContentToCollection(Guid collectionId, AddContentToCollectionCommand command)
     {
         var newId = await _mediator.Send(command);
