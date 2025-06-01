@@ -7,22 +7,77 @@ using NextRef.Infrastructure.DataAccess.Entities;
 using NextRef.Infrastructure.DataAccess.Mappers;
 
 namespace NextRef.Infrastructure.DataAccess.Repositories;
-public class ContentRepository : IContentRepository
+public class ContentRepository : BaseRepository<ContentEntity, Guid>, IContentRepository
 {
-    private readonly DapperContext _context;
-
-    public ContentRepository(DapperContext context)
+    public ContentRepository(DapperContext context) : base(context) { }
+    
+    public async Task<Content?> GetByIdAsync(ContentId id, CancellationToken cancellationToken)
     {
-        _context = context;
+        var entity = await QuerySingleOrDefaultAsync<ContentEntity>(
+            "SELECT * FROM Core.Contents WHERE Id = @Id",
+            new { Id = id.Value },
+            cancellationToken);
+
+        return entity == null ? null : ContentMapper.ToDomain(entity);
     }
-    public async Task<IReadOnlyList<Content>> SearchAsync(string? keyword, string? sortBy, int? limit, int? page = 1)
-    {
-        using var connection = _context.CreateConnection();
 
+    public async Task AddAsync(Content content, CancellationToken cancellationToken)
+    {
+        var sql = @"
+            INSERT INTO Core.Contents (Id, Title, Type, Description, PublishedAt, CreatedAt, UpdatedAt)
+            VALUES (@Id, @Title, @Type, @Description, @PublishedAt, @CreatedAt, @UpdatedAt)";
+
+        var now = DateTime.UtcNow;
+        var parameters = new
+        {
+            Id = content.Id.Value,
+            content.Title,
+            content.Type,
+            content.Description,
+            content.PublishedAt,
+            CreatedAt = now,
+            UpdatedAt = now
+        };
+
+        await ExecuteAsync(sql, parameters, cancellationToken);
+    }
+
+    public async Task UpdateAsync(Content content, CancellationToken cancellationToken)
+    {
+        var sql = @"
+            UPDATE Core.Contents SET
+                Title = @Title,
+                Type = @Type,
+                Description = @Description,
+                PublishedAt = @PublishedAt,
+                UpdatedAt = @UpdatedAt
+            WHERE Id = @Id";
+
+        var parameters = new
+        {
+            content.Title,
+            content.Type,
+            content.Description,
+            content.PublishedAt,
+            UpdatedAt = DateTime.UtcNow,
+            Id = content.Id.Value
+        };
+
+        await ExecuteAsync(sql, parameters, cancellationToken);
+    }
+
+    public async Task DeleteAsync(ContentId id, CancellationToken cancellationToken)
+    {
+        var sql = "DELETE FROM Core.Contents WHERE Id = @Id";
+        var parameters = new { Id = id.Value };
+        await ExecuteAsync(sql, parameters, cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<Content>> SearchAsync(string? keyword, string? sortBy, int? limit, int? page, CancellationToken cancellationToken)
+    {
         int pageSize = limit ?? 20;
         int offset = ((page ?? 1) - 1) * pageSize;
 
-        // Sécurisation du tri
         string orderBy = sortBy?.ToLower() switch
         {
             "title" => "Title ASC",
@@ -41,9 +96,8 @@ public class ContentRepository : IContentRepository
             whereClause = "WHERE (Title LIKE @kw OR Description LIKE @kw)";
             parameters.Add("kw", $"%{keyword}%");
         }
-        // TODO : Create SQL View tu perform search on, to search on authors and other fields
 
-        string sql = $@"
+        var sql = $@"
         SELECT *
         FROM Core.Contents
         {whereClause}
@@ -51,76 +105,7 @@ public class ContentRepository : IContentRepository
         OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY";
 
         // Mapping Dapper -> ContentEntity -> Domaine
-        var entities = await connection.QueryAsync<ContentEntity>(sql, parameters);
+        var entities = await QueryAsync<ContentEntity>(sql, parameters, cancellationToken);
         return entities.Select(ContentMapper.ToDomain).ToList();
-    }
-
-    public async Task<Content?> GetByIdAsync(ContentId id)
-    {
-        const string query = "SELECT * FROM Core.Contents WHERE Id = @Id";
-
-        using var connection = _context.CreateConnection();
-        var entity = await connection.QuerySingleOrDefaultAsync<ContentEntity>(query, new { Id = id.Value });
-
-        if (entity == null)
-            return null;
-
-        return ContentMapper.ToDomain(entity);
-    }
-
-    public async Task AddAsync(Content content)
-    {
-        const string query = @"
-            INSERT INTO Core.Contents (Id, Title, Type, Description, PublishedAt, CreatedAt, UpdatedAt)
-            VALUES (@Id, @Title, @Type, @Description, @PublishedAt, @CreatedAt, @UpdatedAt)";
-
-        using var connection = _context.CreateConnection();
-        var added = await connection.ExecuteAsync(query, new
-        {
-            Id = content.Id.Value,
-            content.Title,
-            content.Type,
-            content.Description,
-            content.PublishedAt,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        });
-
-        if (added == 0)
-            throw new InvalidDataException();
-    }
-
-    public async Task UpdateAsync(Content content)
-    {
-        const string query = @"
-            UPDATE Core.Contents SET
-                Title = @Title,
-                Type = @Type,
-                Description = @Description,
-                PublishedAt = @PublishedAt,
-                UpdatedAt = @UpdatedAt
-            WHERE Id = @Id";
-
-        using var connection = _context.CreateConnection();
-        var updated = await connection.ExecuteAsync(query, new
-        {
-            content.Title,
-            content.Type,
-            content.Description,
-            content.PublishedAt,
-            UpdatedAt = DateTime.UtcNow,
-            Id = content.Id.Value,
-        });
-
-        if (updated == 0)
-            throw new InvalidDataException();
-    }
-
-    public async Task DeleteAsync(ContentId id)
-    {
-        const string query = "DELETE FROM Core.Contents WHERE Id = @Id";
-
-        using var connection = _context.CreateConnection();
-        await connection.ExecuteAsync(query, new { Id = id.Value });
     }
 }

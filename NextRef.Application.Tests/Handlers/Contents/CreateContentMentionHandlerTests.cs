@@ -27,8 +27,8 @@ public class CreateContentMentionHandlerTests
         ContentMention? savedMention = null;
 
         _contentMentionRepositoryMock
-            .Setup(r => r.AddAsync(It.IsAny<ContentMention>()))
-            .Callback<ContentMention>(cm => savedMention = cm)
+            .Setup(r => r.AddAsync(It.IsAny<ContentMention>(), CancellationToken.None))
+            .Callback<ContentMention, CancellationToken>((cm, _) => savedMention = cm)
             .Returns(Task.CompletedTask);
 
         var command = new CreateContentMentionCommand(sourceId, targetId, context);
@@ -37,7 +37,7 @@ public class CreateContentMentionHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        _contentMentionRepositoryMock.Verify(r => r.AddAsync(It.IsAny<ContentMention>()), Times.Once);
+        _contentMentionRepositoryMock.Verify(r => r.AddAsync(It.IsAny<ContentMention>(), CancellationToken.None), Times.Once);
 
         Assert.NotEqual(Guid.Empty, result.Value);
         Assert.NotNull(savedMention);

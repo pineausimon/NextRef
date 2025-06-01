@@ -21,7 +21,7 @@ internal class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand,
         await _userAuthService.AddToRoleAsync(result.Id.ToString(), UserRoles.User);
 
         var domainUser = User.CreateFromAppUser(result.Id, result.Username, result.Email);
-        await _userRepository.AddAsync(domainUser);
+        await _userRepository.AddAsync(domainUser, cancellationToken);
 
         var token = await _userAuthService.GenerateTokenForUserAsync(domainUser.UserName);
         return token;

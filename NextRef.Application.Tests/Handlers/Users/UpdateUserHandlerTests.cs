@@ -19,7 +19,7 @@ public class UpdateUserHandlerTests
     public async Task Handle_UserNotFound_ThrowsNullReferenceException()
     {
         // Arrange
-        _userRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<UserId>()))
+        _userRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<UserId>(), CancellationToken.None))
             .ReturnsAsync((User?)null);
 
         var command = new UpdateUserCommand(UserId.New(), "newUserName", "newEmail");
@@ -36,10 +36,10 @@ public class UpdateUserHandlerTests
         var userId = UserId.New();
         var user = User.Rehydrate(userId, "oldUserName", "oldEmail@example.com");
 
-        _userRepositoryMock.Setup(r => r.GetByIdAsync(userId))
+        _userRepositoryMock.Setup(r => r.GetByIdAsync(userId, CancellationToken.None))
             .ReturnsAsync(user);
 
-        _userRepositoryMock.Setup(r => r.UpdateAsync(user))
+        _userRepositoryMock.Setup(r => r.UpdateAsync(user, CancellationToken.None))
             .Returns(Task.CompletedTask);
 
         var command = new UpdateUserCommand(userId, "newUserName", "newEmail");
@@ -47,7 +47,7 @@ public class UpdateUserHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        _userRepositoryMock.Verify(r => r.UpdateAsync(user), Times.Once);
+        _userRepositoryMock.Verify(r => r.UpdateAsync(user, CancellationToken.None), Times.Once);
         Assert.NotNull(result);
         Assert.Equal(userId, result.Id);
         Assert.Equal("newUserName", result.UserName);

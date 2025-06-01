@@ -14,7 +14,7 @@ internal class GetContentByIdHandler : IRequestHandler<GetContentByIdQuery, Cont
 
     public async Task<ContentDto?> Handle(GetContentByIdQuery request, CancellationToken cancellationToken)
     {
-        var content = await _repository.GetByIdAsync(request.Id);
+        var content = await _repository.GetByIdAsync(request.Id, cancellationToken);
 
         return content == null 
             ? null 

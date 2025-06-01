@@ -26,8 +26,8 @@ public class CreateCollectionHandlerTests
         UserCollection? savedCollection = null;
 
         _repositoryMock
-            .Setup(r => r.AddAsync(It.IsAny<UserCollection>()))
-            .Callback<UserCollection>(uc => savedCollection = uc)
+            .Setup(r => r.AddAsync(It.IsAny<UserCollection>(), CancellationToken.None))
+            .Callback<UserCollection, CancellationToken>((uc, _) => savedCollection = uc)
             .Returns(Task.CompletedTask);
 
         var command = new CreateCollectionCommand(userId, name);
@@ -36,7 +36,7 @@ public class CreateCollectionHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        _repositoryMock.Verify(r => r.AddAsync(It.IsAny<UserCollection>()), Times.Once);
+        _repositoryMock.Verify(r => r.AddAsync(It.IsAny<UserCollection>(), CancellationToken.None), Times.Once);
 
         Assert.NotEqual(Guid.Empty, result.Value);
         Assert.NotNull(savedCollection);

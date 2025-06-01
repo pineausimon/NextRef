@@ -32,7 +32,7 @@ public class AddContentToCollectionCommandHandlerTests
             new ContentId(Guid.NewGuid())
         );
 
-        _collectionRepoMock.Setup(repo => repo.GetByIdAsync(command.UserCollectionId))
+        _collectionRepoMock.Setup(repo => repo.GetByIdAsync(command.UserCollectionId, CancellationToken.None))
             .ReturnsAsync((UserCollection)null!);
 
         // Act & Assert
@@ -52,7 +52,7 @@ public class AddContentToCollectionCommandHandlerTests
 
         var otherUserId = new UserId(Guid.NewGuid());
 
-        _collectionRepoMock.Setup(repo => repo.GetByIdAsync(command.UserCollectionId))
+        _collectionRepoMock.Setup(repo => repo.GetByIdAsync(command.UserCollectionId, CancellationToken.None))
             .ReturnsAsync(UserCollection.Rehydrate(command.UserCollectionId, otherUserId, "Test Collection"));
 
         // Act & Assert
@@ -72,13 +72,13 @@ public class AddContentToCollectionCommandHandlerTests
 
         var collection = UserCollection.Rehydrate(collectionId, userId, "My Collection");
 
-        _collectionRepoMock.Setup(repo => repo.GetByIdAsync(collectionId))
+        _collectionRepoMock.Setup(repo => repo.GetByIdAsync(collectionId, CancellationToken.None))
             .ReturnsAsync(collection);
 
         UserCollectionItem? addedItem = null;
 
-        _itemRepoMock.Setup(repo => repo.AddAsync(It.IsAny<UserCollectionItem>()))
-            .Callback<UserCollectionItem>(item => addedItem = item)
+        _itemRepoMock.Setup(repo => repo.AddAsync(It.IsAny<UserCollectionItem>(), CancellationToken.None))
+            .Callback<UserCollectionItem, CancellationToken>((item, _) => addedItem = item)
             .Returns(Task.CompletedTask);
 
         // Act

@@ -16,7 +16,7 @@ internal class CreateCollectionCommandHandler : IRequestHandler<CreateCollection
     public async Task<UserCollectionId> Handle(CreateCollectionCommand request, CancellationToken cancellationToken)
     {
         var collection = UserCollection.Create(request.UserId, request.Name);
-        await _repository.AddAsync(collection);
+        await _repository.AddAsync(collection, cancellationToken);
 
         return collection.Id;
     }

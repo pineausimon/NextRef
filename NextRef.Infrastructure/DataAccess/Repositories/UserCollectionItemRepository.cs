@@ -2,94 +2,71 @@
 using NextRef.Domain.UserCollections.Repositories;
 using NextRef.Infrastructure.DataAccess.Configuration;
 using NextRef.Infrastructure.DataAccess.Entities;
-using Dapper;
 using NextRef.Domain.Core.Ids;
 using NextRef.Infrastructure.DataAccess.Mappers;
 
 namespace NextRef.Infrastructure.DataAccess.Repositories;
-public class UserCollectionItemRepository : IUserCollectionItemRepository
+public class UserCollectionItemRepository : BaseRepository<UserCollectionItemEntity, Guid>, IUserCollectionItemRepository
 {
-    private readonly DapperContext _context;
+    public UserCollectionItemRepository(DapperContext context) : base(context) {}
 
-    public UserCollectionItemRepository(DapperContext context)
+    public async Task<UserCollectionItem?> GetByIdAsync(UserCollectionItemId id, CancellationToken cancellationToken)
     {
-        _context = context;
-    }
+        const string sql = "SELECT * FROM Core.UserCollectionItems WHERE Id = @Id";
+        var parameters = new { Id = id.Value };
 
-    public async Task<UserCollectionItem?> GetByIdAsync(UserCollectionItemId id)
-    {
-        const string query = "SELECT * FROM Core.UserCollectionItems WHERE Id = @Id";
-
-        using var connection = _context.CreateConnection();
-        var entity = await connection.QuerySingleOrDefaultAsync<UserCollectionItemEntity>(query, new { Id = id.Value });
+        var entity = await QuerySingleOrDefaultAsync<UserCollectionItemEntity>(sql, parameters, cancellationToken);
         return entity?.ToDomain();
     }
 
-    public async Task<IEnumerable<UserCollectionItem>> GetByCollectionIdAsync(UserCollectionId collectionId)
+    public async Task<IEnumerable<UserCollectionItem>> GetByCollectionIdAsync(UserCollectionId collectionId, CancellationToken cancellationToken)
     {
-        const string query = "SELECT * FROM Core.UserCollectionItems WHERE CollectionId = @CollectionId";
+        const string sql = "SELECT * FROM Core.UserCollectionItems WHERE CollectionId = @CollectionId";
+        var parameters = new { CollectionId = collectionId.Value };
 
-        using var connection = _context.CreateConnection();
-        var entities = await connection.QueryAsync<UserCollectionItemEntity>(query, new { CollectionId = collectionId.Value });
+        var entities = await QueryAsync<UserCollectionItemEntity>(sql, parameters, cancellationToken);
         return entities.Select(e => e.ToDomain());
     }
 
-    public async Task AddAsync(UserCollectionItem item)
-    {const string query = @"
+    public async Task AddAsync(UserCollectionItem item, CancellationToken cancellationToken)
+    {
+        const string sql = @"
             INSERT INTO Core.UserCollectionItems (Id, CollectionId, ContentId, Status, AddedAt)
             VALUES (@Id, @CollectionId, @ContentId, @Status, @AddedAt)";
 
-        using var connection = _context.CreateConnection();
-        var added = await connection.ExecuteAsync(query, new
+        var parameters = new
         {
             Id = item.Id.Value,
             CollectionId = item.CollectionId.Value,
             ContentId = item.ContentId.Value,
             item.Status,
             item.AddedAt
-        });
+        };
 
-        if (added == 0)
-            throw new InvalidDataException();
+        await ExecuteAsync(sql, parameters, cancellationToken);
     }
 
-    public async Task UpdateAsync(UserCollectionItem item)
+    public async Task UpdateAsync(UserCollectionItem item, CancellationToken cancellationToken)
     {
-        const string query = @"
+        const string sql = @"
             UPDATE Core.UserCollectionItems
             SET Status = @Status
             WHERE Id = @Id";
 
-        using var connection = _context.CreateConnection();
-        var updated = await connection.ExecuteAsync(query, new
+        var parameters = new
         {
             item.Status,
-            UpdatedAt = DateTime.UtcNow,
             Id = item.Id.Value
-        });
+        };
 
-
-        if (updated == 0)
-            throw new InvalidDataException();
+        await ExecuteAsync(sql, parameters, cancellationToken);
     }
 
-    public async Task DeleteAsync(UserCollectionItemId id)
+    public async Task DeleteAsync(UserCollectionItemId id, CancellationToken cancellationToken)
     {
-        const string query = "DELETE FROM Core.UserCollectionItems WHERE Id = @Id";
+        const string sql = "DELETE FROM Core.UserCollectionItems WHERE Id = @Id";
+        var parameters = new { Id = id.Value };
 
-        using var connection = _context.CreateConnection();
-        await connection.ExecuteAsync(query, new { Id = id.Value });
-    }
-
-    public async Task<bool> ExistsAsync(UserCollectionId collectionId, ContentId contentId)
-    {
-        const string query = @"
-            SELECT COUNT(1)
-            FROM Core.UserCollectionItems
-            WHERE CollectionId = @CollectionId AND ContentId = @ContentId";
-
-        using var connection = _context.CreateConnection();
-        var exists = await connection.ExecuteScalarAsync<bool>(query, new { CollectionId = collectionId.Value, ContentId = contentId.Value });
-        return exists;
+        await ExecuteAsync(sql, parameters, cancellationToken);
     }
 }

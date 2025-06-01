@@ -16,7 +16,7 @@ internal class AddContentToCollectionCommandHandler : IRequestHandler<AddContent
     }
     public async Task<UserCollectionItemId> Handle(AddContentToCollectionCommand request, CancellationToken cancellationToken)
     {
-        var collection = await _userCollectionRepository.GetByIdAsync(request.UserCollectionId);
+        var collection = await _userCollectionRepository.GetByIdAsync(request.UserCollectionId, cancellationToken);
 
         if (collection == null)
             throw new KeyNotFoundException($"Collection with ID {request.UserCollectionId} not found.");
@@ -26,7 +26,7 @@ internal class AddContentToCollectionCommandHandler : IRequestHandler<AddContent
 
         var collectionItem = UserCollectionItem.Create(request.UserCollectionId, request.ContentId, "quote");
 
-        await _userCollectionItemRepository.AddAsync(collectionItem);
+        await _userCollectionItemRepository.AddAsync(collectionItem, cancellationToken);
 
         return collectionItem.Id;
     }

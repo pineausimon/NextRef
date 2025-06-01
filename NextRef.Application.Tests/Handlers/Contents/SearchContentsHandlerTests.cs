@@ -29,7 +29,7 @@ public class SearchContentsHandlerTests
 
         // Assert
         Assert.Equal(cachedResult, result);
-        _repoMock.Verify(r => r.SearchAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<int?>()), Times.Never);
+        _repoMock.Verify(r => r.SearchAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<int?>(), CancellationToken.None), Times.Never);
         _cacheMock.Verify(c => c.SetAsync(It.IsAny<string>(), It.IsAny<IReadOnlyList<ContentDto>>(), null), Times.Never);
     }
 
@@ -45,7 +45,7 @@ public class SearchContentsHandlerTests
         {
             Content.Create("Title1", "Type1", System.DateTime.UtcNow, "desc")
         };
-        _repoMock.Setup(r => r.SearchAsync(query.Keyword, query.SortBy, query.Limit, query.Page))
+        _repoMock.Setup(r => r.SearchAsync(query.Keyword, query.SortBy, query.Limit, query.Page, CancellationToken.None))
                  .ReturnsAsync(repoResult);
 
         var handler = CreateHandler();
@@ -58,7 +58,7 @@ public class SearchContentsHandlerTests
         Assert.Single(result);
         Assert.Equal("Title1", result[0].Title);
 
-        _repoMock.Verify(r => r.SearchAsync(query.Keyword, query.SortBy, query.Limit, query.Page), Times.Once);
+        _repoMock.Verify(r => r.SearchAsync(query.Keyword, query.SortBy, query.Limit, query.Page, CancellationToken.None), Times.Once);
         _cacheMock.Verify(c => c.SetAsync(It.IsAny<string>(), It.IsAny<IReadOnlyList<ContentDto>>(), null), Times.Once);
     }
 }

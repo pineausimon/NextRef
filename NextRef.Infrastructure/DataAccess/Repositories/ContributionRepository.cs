@@ -1,5 +1,4 @@
-﻿using Dapper;
-using NextRef.Domain.Contents.Models;
+﻿using NextRef.Domain.Contents.Models;
 using NextRef.Infrastructure.DataAccess.Configuration;
 using NextRef.Infrastructure.DataAccess.Entities;
 using NextRef.Domain.Contents.Repositories;
@@ -7,39 +6,33 @@ using NextRef.Domain.Core.Ids;
 using NextRef.Infrastructure.DataAccess.Mappers;
 
 namespace NextRef.Infrastructure.DataAccess.Repositories;
-public class ContributionRepository : IContributionRepository
+public class ContributionRepository : BaseRepository<ContributionEntity, Guid>, IContributionRepository
 {
-    private readonly DapperContext _context;
+    public ContributionRepository(DapperContext context) : base(context) {}
 
-    public ContributionRepository(DapperContext context)
+    public async Task AddAsync(Contribution contribution, CancellationToken cancellationToken)
     {
-        _context = context;
-    }
-
-    public async Task AddAsync(Contribution contribution)
-    {
-        const string query = @"
+        const string sql = @"
             INSERT INTO Core.Contributions (Id, ContributorId, ContentId, Role, CreatedAt, UpdatedAt)
             VALUES (@Id, @ContributorId, @ContentId, @Role, @CreatedAt, @UpdatedAt);";
 
+        var now = DateTime.UtcNow;
         var parameters = new
         {
             Id = contribution.Id.Value,
             ContributorId = contribution.ContributorId.Value,
             ContentId = contribution.ContentId.Value,
             contribution.Role,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow,
-
+            CreatedAt = now,
+            UpdatedAt = now,
         };
 
-        using var connection = _context.CreateConnection();
-        await connection.ExecuteAsync(new CommandDefinition(query, parameters));
+        await ExecuteAsync(sql, parameters, cancellationToken);
     }
 
-    public async Task UpdateAsync(Contribution contribution)
+    public async Task UpdateAsync(Contribution contribution, CancellationToken cancellationToken)
     {
-        const string query = @"
+        const string sql = @"
             UPDATE Core.Contributions
             SET Role = @Role,
                 UpdatedAt = @UpdatedAt
@@ -52,48 +45,41 @@ public class ContributionRepository : IContributionRepository
             Id = contribution.Id.Value,
         };
 
-        using var connection = _context.CreateConnection();
-        await connection.ExecuteAsync(new CommandDefinition(query, parameters));
+        await ExecuteAsync(sql, parameters, cancellationToken);
     }
 
-    public async Task DeleteAsync(ContributionId id)
+    public async Task DeleteAsync(ContributionId id, CancellationToken cancellationToken)
     {
-        const string query = "DELETE FROM Core.Contributions WHERE Id = @Id";
+        const string sql = "DELETE FROM Core.Contributions WHERE Id = @Id";
+        var parameters = new { Id = id.Value };
 
-        using var connection = _context.CreateConnection();
-        await connection.ExecuteAsync(query, new { Id = id.Value });
+        await ExecuteAsync(sql, parameters, cancellationToken);
     }
 
-    public async Task<Contribution?> GetByIdAsync(ContributionId id)
+    public async Task<Contribution?> GetByIdAsync(ContributionId id, CancellationToken cancellationToken)
     {
-        const string query = "SELECT * FROM Core.Contributions WHERE Id = @Id;";
+        const string sql = "SELECT * FROM Core.Contributions WHERE Id = @Id;";
+        var parameters = new { Id = id.Value };
 
-        using var connection = _context.CreateConnection();
-        var entity = await connection.QuerySingleOrDefaultAsync<ContributionEntity>(
-            new CommandDefinition(query, new { Id = id.Value }));
-
+        var entity = await QuerySingleOrDefaultAsync<ContributionEntity>(sql, parameters, cancellationToken);
         return entity?.ToDomain();
     }
 
-    public async Task<IEnumerable<Contribution>> GetByContributorIdAsync(ContributorId contributorId)
+    public async Task<IEnumerable<Contribution>> GetByContributorIdAsync(ContributorId contributorId, CancellationToken cancellationToken)
     {
-        const string query = "SELECT * FROM Core.Contributions WHERE ContributorId = @ContributorId;";
+        const string sql = "SELECT * FROM Core.Contributions WHERE ContributorId = @ContributorId;";
+        var parameters = new { ContributorId = contributorId.Value };
 
-        using var connection = _context.CreateConnection();
-        var entities = await connection.QueryAsync<ContributionEntity>(
-            new CommandDefinition(query, new { ContributionId = contributorId.Value }));
-
-        return entities.Select(e => e.ToDomain());
+        var entities = await QueryAsync<ContributionEntity>(sql, parameters, cancellationToken);
+        return entities.Select(ContributionMapper.ToDomain);
     }
 
-    public async Task<IEnumerable<Contribution>> GetByContentIdAsync(ContentId contentId)
+    public async Task<IEnumerable<Contribution>> GetByContentIdAsync(ContentId contentId, CancellationToken cancellationToken)
     {
-        const string query = "SELECT * FROM Core.Contributions WHERE ContentId = @ContentId;";
+        const string sql = "SELECT * FROM Core.Contributions WHERE ContentId = @ContentId;";
+        var parameters = new { ContentId = contentId.Value };
 
-        using var connection = _context.CreateConnection();
-        var entities = await connection.QueryAsync<ContributionEntity>(
-            new CommandDefinition(query, new { ContentId = contentId.Value }));
-
-        return entities.Select(e => e.ToDomain());
+        var entities = await QueryAsync<ContributionEntity>(sql, parameters, cancellationToken);
+        return entities.Select(ContributionMapper.ToDomain);
     }
 }

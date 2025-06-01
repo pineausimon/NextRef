@@ -19,7 +19,7 @@ public class GetUserHandlerTests
     public async Task Handle_UserNotFound_ThrowsNullReferenceException()
     {
         // Arrange
-        _userRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<UserId>()))
+        _userRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<UserId>(), CancellationToken.None))
             .ReturnsAsync((User?)null);
 
         var query = new GetUserQuery(UserId.New());
@@ -36,7 +36,7 @@ public class GetUserHandlerTests
         var userId = UserId.New();
         var user = User.Rehydrate(userId, "testUser", "test@example.com");
 
-        _userRepositoryMock.Setup(r => r.GetByIdAsync(userId))
+        _userRepositoryMock.Setup(r => r.GetByIdAsync(userId, CancellationToken.None))
             .ReturnsAsync(user);
 
         var query = new GetUserQuery(userId);

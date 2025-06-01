@@ -9,7 +9,8 @@ public interface IContributionService
     Task AddContributionsAsync(
         ContentId contentId,
         List<ContributionWithExistingContributorDto> existings,
-        List<ContributionWithNewContributorDto> news);
+        List<ContributionWithNewContributorDto> news,
+        CancellationToken cancellationToken);
 }
 
 public class ContributionService : IContributionService
@@ -28,17 +29,18 @@ public class ContributionService : IContributionService
     public async Task AddContributionsAsync(
         ContentId contentId,
         List<ContributionWithExistingContributorDto> existings,
-        List<ContributionWithNewContributorDto> news)
+        List<ContributionWithNewContributorDto> news,
+        CancellationToken cancellationToken)
     {
         foreach (var dto in existings)
         {
             var contribution = Contribution.Create(dto.ContributorId, contentId, dto.Role);
-            await _contributionRepo.AddAsync(contribution);
+            await _contributionRepo.AddAsync(contribution, cancellationToken);
         }
 
         foreach (var dto in news)
         {
-            var existingContributor = await _contributorRepo.GetByFullNameAsync(dto.FullName.Trim());
+            var existingContributor = await _contributorRepo.GetByFullNameAsync(dto.FullName.Trim(), cancellationToken);
 
             Contributor contributor;
 
@@ -49,11 +51,11 @@ public class ContributionService : IContributionService
             else
             {
                 contributor = Contributor.Create(dto.FullName.Trim(), "");
-                await _contributorRepo.AddAsync(contributor);
+                await _contributorRepo.AddAsync(contributor, cancellationToken);
             }
 
             var contribution = Contribution.Create(contributor.Id, contentId, dto.Role);
-            await _contributionRepo.AddAsync(contribution);
+            await _contributionRepo.AddAsync(contribution, cancellationToken);
         }
     }
 }

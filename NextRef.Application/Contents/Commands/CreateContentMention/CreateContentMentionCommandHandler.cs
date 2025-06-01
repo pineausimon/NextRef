@@ -15,7 +15,7 @@ internal class CreateContentMentionCommandHandler : IRequestHandler<CreateConten
     {
         var contentMention = ContentMention.Create(request.SourceContentId, request.TargetContentId, request.Context);
 
-        await _contentMentionRepository.AddAsync(contentMention);
+        await _contentMentionRepository.AddAsync(contentMention, cancellationToken);
         return contentMention.Id;
     }
 }

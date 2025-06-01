@@ -13,7 +13,7 @@ internal class GetUserCollectionsQueryHandler : IRequestHandler<GetUserCollectio
     }
     public async Task<IEnumerable<UserCollectionDto>> Handle(GetUserCollectionsQuery request, CancellationToken cancellationToken)
     {
-        var collections = await _userCollectionRepository.GetByUserIdAsync(request.UserId);
+        var collections = await _userCollectionRepository.GetByUserIdAsync(request.UserId, CancellationToken.None);
 
         return collections.Select(UserCollectionDto.FromDomain);
     }

@@ -19,7 +19,7 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
     {
         _logger.LogInformation("Handling {RequestType} with data: {@Request}", typeof(TRequest).Name, request);
 
-        var response = await next();
+        var response = await next(cancellationToken);
 
         _logger.LogInformation("Handled {RequestType} with response: {@Response}", typeof(TRequest).Name, response);
 

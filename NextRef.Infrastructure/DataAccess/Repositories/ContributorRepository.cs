@@ -1,5 +1,4 @@
-﻿using Dapper;
-using NextRef.Domain.Contents.Models;
+﻿using NextRef.Domain.Contents.Models;
 using NextRef.Domain.Contents.Repositories;
 using NextRef.Domain.Core.Ids;
 using NextRef.Infrastructure.DataAccess.Configuration;
@@ -7,38 +6,32 @@ using NextRef.Infrastructure.DataAccess.Entities;
 using NextRef.Infrastructure.DataAccess.Mappers;
 
 namespace NextRef.Infrastructure.DataAccess.Repositories;
-public class ContributorRepository : IContributorRepository
+public class ContributorRepository : BaseRepository<ContributorEntity, Guid>, IContributorRepository
 {
-    private readonly DapperContext _context;
+    public ContributorRepository(DapperContext context) : base(context) {}
 
-    public ContributorRepository(DapperContext context)
+    public async Task AddAsync(Contributor contributor, CancellationToken cancellationToken)
     {
-        _context = context;
-    }
-
-    public async Task AddAsync(Contributor contributor)
-    {
-        const string query = @"
+        const string sql = @"
             INSERT INTO Core.Contributors (Id, FullName, Bio, CreatedAt, UpdatedAt)
             VALUES (@Id, @FullName, @Bio, @CreatedAt, @UpdatedAt);";
 
+        var now = DateTime.UtcNow;
         var parameters = new
         {
             Id = contributor.Id.Value,
             contributor.FullName,
             contributor.Bio,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow,
-
+            CreatedAt = now,
+            UpdatedAt = now
         };
 
-        using var connection = _context.CreateConnection();
-        await connection.ExecuteAsync(new CommandDefinition(query, parameters));
+        await ExecuteAsync(sql, parameters, cancellationToken);
     }
 
-    public async Task UpdateAsync(Contributor contributor)
+    public async Task UpdateAsync(Contributor contributor, CancellationToken cancellationToken)
     {
-        const string query = @"
+        const string sql = @"
             UPDATE Core.Contributors
             SET FullName = @FullName,
                 Bio = @Bio,
@@ -53,35 +46,31 @@ public class ContributorRepository : IContributorRepository
             Id = contributor.Id.Value,
         };
 
-        using var connection = _context.CreateConnection();
-        await connection.ExecuteAsync(new CommandDefinition(query, parameters));
+        await ExecuteAsync(sql, parameters, cancellationToken);
     }
 
-    public async Task DeleteAsync(ContributorId id)
+    public async Task DeleteAsync(ContributorId id, CancellationToken cancellationToken)
     {
-        const string query = "DELETE FROM Core.Contributors WHERE Id = @Id";
+        const string sql = "DELETE FROM Core.Contributors WHERE Id = @Id";
+        var parameters = new { Id = id.Value };
 
-        using var connection = _context.CreateConnection();
-        await connection.ExecuteAsync(query, new { Id = id.Value });
+        await ExecuteAsync(sql, parameters, cancellationToken);
     }
 
-    public async Task<Contributor?> GetByIdAsync(ContributorId id)
+    public async Task<Contributor?> GetByIdAsync(ContributorId id, CancellationToken cancellationToken)
     {
-        const string query = "SELECT * FROM Core.Contributors WHERE Id = @Id;";
+        const string sql = "SELECT * FROM Core.Contributors WHERE Id = @Id;";
+        var parameters = new { Id = id.Value };
 
-        using var connection = _context.CreateConnection();
-        var entity = await connection.QuerySingleOrDefaultAsync<ContributorEntity>(
-            new CommandDefinition(query, new { Id = id.Value }));
-
+        var entity = await QuerySingleOrDefaultAsync<ContributorEntity>(sql, parameters, cancellationToken);
         return entity?.ToDomain();
     }
-    public async Task<Contributor?> GetByFullNameAsync(string fullName)
+    public async Task<Contributor?> GetByFullNameAsync(string fullName, CancellationToken cancellationToken)
     {
         var sql = "SELECT * FROM core.Contributors WHERE FullName = @FullName";
-        using var connection = _context.CreateConnection();
-        var entity = await connection.QuerySingleOrDefaultAsync<ContributorEntity>(
-            sql, new { FullName = fullName });
+        var parameters = new { FullName = fullName };
 
+        var entity = await QuerySingleOrDefaultAsync<ContributorEntity>(sql, parameters, cancellationToken);
         return entity?.ToDomain();
     }
 }

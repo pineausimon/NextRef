@@ -14,12 +14,12 @@ internal class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Use
 
     public async Task<UserDto> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetByIdAsync(request.Id);
+        var user = await _userRepository.GetByIdAsync(request.Id, cancellationToken);
         if (user == null)
             throw new NullReferenceException();
 
         user.Update(request.UserName, request.UserName);
-        await _userRepository.UpdateAsync(user);
+        await _userRepository.UpdateAsync(user, CancellationToken.None);
 
         return UserDtoMapper.ToDto(user);
     }

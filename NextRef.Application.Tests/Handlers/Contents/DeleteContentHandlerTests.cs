@@ -32,7 +32,7 @@ public class DeleteContentHandlerTests
 
         // Assert
         await act.Should().NotThrowAsync();
-        _contentRepositoryMock.Verify(repo => repo.DeleteAsync(contentId), Times.Once);
+        _contentRepositoryMock.Verify(repo => repo.DeleteAsync(contentId, CancellationToken.None), Times.Once);
         _cacheMock.Verify(c => c.RemoveByPatternAsync("content_search:*"), Times.Once);
     }
 }

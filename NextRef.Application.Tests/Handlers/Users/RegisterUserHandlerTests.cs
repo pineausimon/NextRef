@@ -43,6 +43,6 @@ public class RegisterUserHandlerTests
 
         _userAuthServiceMock.Verify(x => x.AddToRoleAsync(appUserResult.Id.ToString(), UserRoles.User), Times.Once);
         _userRepositoryMock.Verify(x => x.AddAsync(It.Is<User>(u =>
-            u.Id.Value == appUserResult.Id && u.UserName == appUserResult.Username && u.Email == appUserResult.Email)), Times.Once);
+            u.Id.Value == appUserResult.Id && u.UserName == appUserResult.Username && u.Email == appUserResult.Email), CancellationToken.None), Times.Once);
     }
 }

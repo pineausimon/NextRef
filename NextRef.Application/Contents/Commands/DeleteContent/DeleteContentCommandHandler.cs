@@ -16,7 +16,7 @@ internal class DeleteContentHandler : IRequestHandler<DeleteContentCommand>
 
     public async Task Handle(DeleteContentCommand request, CancellationToken cancellationToken)
     {
-        await _repository.DeleteAsync(request.Id);
+        await _repository.DeleteAsync(request.Id, cancellationToken);
         await _cacheService.RemoveByPatternAsync("content_search:*");
     }
 }

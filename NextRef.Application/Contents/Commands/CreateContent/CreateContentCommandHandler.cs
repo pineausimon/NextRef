@@ -23,11 +23,11 @@ internal class CreateContentHandler : IRequestHandler<CreateContentCommand, Cont
     public async Task<ContentId> Handle(CreateContentCommand request, CancellationToken cancellationToken)
     {
         var content = Content.Create(request.Title, request.Type, request.PublishedAt, request.Description);
-        await _repository.AddAsync(content);
+        await _repository.AddAsync(content, cancellationToken);
 
 
         await _contributionService.AddContributionsAsync(
-            content.Id, request.ExistingContributions, request.NewContributions);
+            content.Id, request.ExistingContributions, request.NewContributions, cancellationToken);
 
         await _cacheService.RemoveByPatternAsync("content_search:*");
 

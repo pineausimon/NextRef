@@ -17,11 +17,11 @@ internal class UpdateContentHandler : IRequestHandler<UpdateContentCommand, Cont
 
     public async Task<ContentDto> Handle(UpdateContentCommand request, CancellationToken cancellationToken)
     {
-        var content = await _repository.GetByIdAsync(request.Id);
+        var content = await _repository.GetByIdAsync(request.Id, cancellationToken);
         if (content == null) throw new KeyNotFoundException("Content not found");
 
         content.Update(request.Title, request.Type, request.PublishedAt, request.Description);
-        await _repository.UpdateAsync(content);
+        await _repository.UpdateAsync(content, cancellationToken);
 
         await _cacheService.RemoveByPatternAsync("content_search:*");
 

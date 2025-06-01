@@ -26,7 +26,7 @@ internal class SearchContentsQueryHandler : IRequestHandler<SearchContentsQuery,
             return cached;
 
         // 2. Sinon, va en base
-        var contents = await _repository.SearchAsync(request.Keyword, request.SortBy, request.Limit, request.Page);
+        var contents = await _repository.SearchAsync(request.Keyword, request.SortBy, request.Limit, request.Page, cancellationToken);
         var dtos = contents.Select(ContentMapper.ToDto).ToList();
 
         // 3. Stocke en cache

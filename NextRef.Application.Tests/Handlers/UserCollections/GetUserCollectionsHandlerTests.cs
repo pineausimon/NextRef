@@ -28,7 +28,7 @@ public class GetUserCollectionsHandlerTests
         };
 
         _userCollectionRepositoryMock
-            .Setup(repo => repo.GetByUserIdAsync(userId))
+            .Setup(repo => repo.GetByUserIdAsync(userId, CancellationToken.None))
             .ReturnsAsync(collections);
 
         var query = new GetUserCollectionsQuery(userId);
@@ -51,7 +51,7 @@ public class GetUserCollectionsHandlerTests
         var userId = UserId.New();
 
         _userCollectionRepositoryMock
-            .Setup(repo => repo.GetByUserIdAsync(userId))
+            .Setup(repo => repo.GetByUserIdAsync(userId, CancellationToken.None))
             .ReturnsAsync(new List<UserCollection>());
 
         var query = new GetUserCollectionsQuery(userId);

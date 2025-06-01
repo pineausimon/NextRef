@@ -38,15 +38,14 @@ public class CreateContentHandlerTests
             }
         );
 
-        // On intercepte le contenu ajouté pour vérifier l'appel
         Content? createdContent = null;
 
-        _contentRepositoryMock.Setup(r => r.AddAsync(It.IsAny<Content>()))
-            .Callback<Content>(c => createdContent = c)
+        _contentRepositoryMock.Setup(r => r.AddAsync(It.IsAny<Content>(), CancellationToken.None))
+            .Callback<Content, CancellationToken>((c, _) => createdContent = c)
             .Returns(Task.CompletedTask);
 
         _contributionServiceMock
-            .Setup(s => s.AddContributionsAsync(It.IsAny<ContentId>(), command.ExistingContributions, command.NewContributions))
+            .Setup(s => s.AddContributionsAsync(It.IsAny<ContentId>(), command.ExistingContributions, command.NewContributions, CancellationToken.None))
             .Returns(Task.CompletedTask);
         _cacheMock.Setup(c => c.RemoveByPatternAsync(It.IsAny<string>())).Returns(Task.CompletedTask);
 
@@ -61,8 +60,8 @@ public class CreateContentHandlerTests
         Assert.Equal(command.Type, createdContent.Type);
         Assert.Equal(command.PublishedAt, createdContent.PublishedAt);
 
-        _contentRepositoryMock.Verify(r => r.AddAsync(It.IsAny<Content>()), Times.Once);
-        _contributionServiceMock.Verify(s => s.AddContributionsAsync(createdContent.Id, command.ExistingContributions, command.NewContributions), Times.Once);
+        _contentRepositoryMock.Verify(r => r.AddAsync(It.IsAny<Content>(), CancellationToken.None), Times.Once);
+        _contributionServiceMock.Verify(s => s.AddContributionsAsync(createdContent.Id, command.ExistingContributions, command.NewContributions, CancellationToken.None), Times.Once);
         _cacheMock.Verify(c => c.RemoveByPatternAsync("content_search:*"), Times.Once);
     }
 
@@ -79,11 +78,14 @@ public class CreateContentHandlerTests
             []
         );
 
-        _contentRepositoryMock.Setup(r => r.AddAsync(It.IsAny<Content>()))
+        _contentRepositoryMock.Setup(r => r.AddAsync(It.IsAny<Content>(), CancellationToken.None))
             .Returns(Task.CompletedTask);
 
         _contributionServiceMock
-            .Setup(s => s.AddContributionsAsync(It.IsAny<ContentId>(), new List<ContributionWithExistingContributorDto>(), new List<ContributionWithNewContributorDto>()))
+            .Setup(s => s.AddContributionsAsync(
+                It.IsAny<ContentId>(),
+                new List<ContributionWithExistingContributorDto>(),
+                new List<ContributionWithNewContributorDto>(), CancellationToken.None))
             .Returns(Task.CompletedTask);
         _cacheMock.Setup(c => c.RemoveByPatternAsync(It.IsAny<string>())).Returns(Task.CompletedTask);
 
@@ -92,8 +94,11 @@ public class CreateContentHandlerTests
 
         // Assert
         Assert.NotEqual(Guid.Empty, result.Value);
-        _contentRepositoryMock.Verify(r => r.AddAsync(It.IsAny<Content>()), Times.Once);
-        _contributionServiceMock.Verify(s => s.AddContributionsAsync(It.IsAny<ContentId>(), new List<ContributionWithExistingContributorDto>(), new List<ContributionWithNewContributorDto>()), Times.Once);
+        _contentRepositoryMock.Verify(r => r.AddAsync(It.IsAny<Content>(), CancellationToken.None), Times.Once);
+        _contributionServiceMock.Verify(s => s.AddContributionsAsync(
+            It.IsAny<ContentId>(),
+            new List<ContributionWithExistingContributorDto>(),
+            new List<ContributionWithNewContributorDto>(), CancellationToken.None), Times.Once);
         _cacheMock.Verify(c => c.RemoveByPatternAsync("content_search:*"), Times.Once);
     }
 

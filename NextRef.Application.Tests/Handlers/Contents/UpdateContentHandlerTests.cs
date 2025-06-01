@@ -19,8 +19,8 @@ public class UpdateContentHandlerTests
         // Arrange
         var contentId = ContentId.New();
         var content = Content.Create("OldTitle", "Type", DateTime.UtcNow, "desc");
-        _repoMock.Setup(r => r.GetByIdAsync(contentId)).ReturnsAsync(content);
-        _repoMock.Setup(r => r.UpdateAsync(It.IsAny<Content>())).Returns(Task.CompletedTask);
+        _repoMock.Setup(r => r.GetByIdAsync(contentId, CancellationToken.None)).ReturnsAsync(content);
+        _repoMock.Setup(r => r.UpdateAsync(It.IsAny<Content>(), CancellationToken.None)).Returns(Task.CompletedTask);
         _cacheMock.Setup(c => c.RemoveByPatternAsync(It.IsAny<string>())).Returns(Task.CompletedTask);
 
         var handler = CreateHandler();
@@ -36,8 +36,8 @@ public class UpdateContentHandlerTests
         var result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
-        _repoMock.Verify(r => r.GetByIdAsync(contentId), Times.Once);
-        _repoMock.Verify(r => r.UpdateAsync(It.IsAny<Content>()), Times.Once);
+        _repoMock.Verify(r => r.GetByIdAsync(contentId, CancellationToken.None), Times.Once);
+        _repoMock.Verify(r => r.UpdateAsync(It.IsAny<Content>(), CancellationToken.None), Times.Once);
         _cacheMock.Verify(c => c.RemoveByPatternAsync("content_search:*"), Times.Once);
         Assert.Equal("NewTitle", result.Title);
     }
@@ -47,7 +47,7 @@ public class UpdateContentHandlerTests
     {
         // Arrange
         var contentId = ContentId.New();
-        _repoMock.Setup(r => r.GetByIdAsync(contentId)).ReturnsAsync((Content?)null);
+        _repoMock.Setup(r => r.GetByIdAsync(contentId, CancellationToken.None)).ReturnsAsync((Content?)null);
 
         var handler = CreateHandler();
         var command = new UpdateContentCommand(
@@ -60,7 +60,7 @@ public class UpdateContentHandlerTests
 
         // Act & Assert
         await Assert.ThrowsAsync<KeyNotFoundException>(() => handler.Handle(command, CancellationToken.None));
-        _repoMock.Verify(r => r.UpdateAsync(It.IsAny<Content>()), Times.Never);
+        _repoMock.Verify(r => r.UpdateAsync(It.IsAny<Content>(), CancellationToken.None), Times.Never);
         _cacheMock.Verify(c => c.RemoveByPatternAsync(It.IsAny<string>()), Times.Never);
     }
 }

@@ -26,7 +26,7 @@ public class GetContentByIdHandlerTests
         var domainContent = Content.Rehydrate(contentId, "Titre", "Type", DateTime.UtcNow, "Description");
 
         _contentRepositoryMock
-            .Setup(repo => repo.GetByIdAsync(contentId))
+            .Setup(repo => repo.GetByIdAsync(contentId, CancellationToken.None))
             .ReturnsAsync(domainContent);
 
         var query = new GetContentByIdQuery(contentId);
@@ -45,7 +45,7 @@ public class GetContentByIdHandlerTests
             Description = domainContent.Description,
         });
 
-        _contentRepositoryMock.Verify(repo => repo.GetByIdAsync(contentId), Times.Once);
+        _contentRepositoryMock.Verify(repo => repo.GetByIdAsync(contentId, CancellationToken.None), Times.Once);
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class GetContentByIdHandlerTests
         var contentId = ContentId.New();
 
         _contentRepositoryMock
-            .Setup(repo => repo.GetByIdAsync(contentId))
+            .Setup(repo => repo.GetByIdAsync(contentId, CancellationToken.None))
             .ReturnsAsync((Content?)null);
 
         var query = new GetContentByIdQuery(contentId);
@@ -65,6 +65,6 @@ public class GetContentByIdHandlerTests
 
         // Assert
         result.Should().BeNull();
-        _contentRepositoryMock.Verify(repo => repo.GetByIdAsync(contentId), Times.Once);
+        _contentRepositoryMock.Verify(repo => repo.GetByIdAsync(contentId, CancellationToken.None), Times.Once);
     }
 }
