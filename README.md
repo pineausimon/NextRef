@@ -7,7 +7,7 @@ Le projet a d’abord été pensé comme une bibliothèque personnelle de réfé
 Il a depuis évolué vers l’idée de centraliser ces références dans une base collaborative, avec pour objectif à terme de proposer des recommandations de contenus, en se basant sur des références communes partagées par d’autres utilisateurs. 
 
 Ce dépôt contient la solution **backend** du projet. Une application web en React est également en cours de développement :    
-➡️ https://github.com/pineausimon/NextRefApp
+➡️ https://github.com/pineausimon/NextRefApp (bientôt accessible)
 
 ---
 
