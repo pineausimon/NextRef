@@ -10,6 +10,7 @@ public class ContributorRepository : BaseRepository<ContributorEntity, Guid>, IC
 {
     public ContributorRepository(DapperContext context) : base(context) {}
 
+
     public async Task AddAsync(Contributor contributor, CancellationToken cancellationToken)
     {
         const string sql = @"
@@ -65,6 +66,18 @@ public class ContributorRepository : BaseRepository<ContributorEntity, Guid>, IC
         var entity = await QuerySingleOrDefaultAsync<ContributorEntity>(sql, parameters, cancellationToken);
         return entity?.ToDomain();
     }
+
+    public async Task<IReadOnlyList<Contributor>> SearchAsync(string keyword, CancellationToken cancellationToken)
+    {
+        var sql = "SELECT * FROM Core.Contributors WHERE LOWER(FullName) LIKE LOWER(@Keyword);";
+        var parameters = new { Keyword = $"%{keyword}%" };
+
+        var entities = await QueryAsync<ContributorEntity>(sql, parameters, cancellationToken);
+        return entities.Select(ContributorMapper.ToDomain).ToList();
+
+    }
+
+
     public async Task<Contributor?> GetByFullNameAsync(string fullName, CancellationToken cancellationToken)
     {
         var sql = "SELECT * FROM core.Contributors WHERE FullName = @FullName";
