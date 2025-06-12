@@ -5,6 +5,7 @@ using NextRef.Application.Caching;
 using NextRef.Domain.Contents.Models;
 using NextRef.Domain.Core.Ids;
 
+namespace NextRef.Application.Tests.Handlers.Contents;
 public class UpdateContentHandlerTests
 {
     private readonly Mock<IContentRepository> _repoMock = new();

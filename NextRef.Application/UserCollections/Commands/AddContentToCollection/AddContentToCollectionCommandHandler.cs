@@ -1,10 +1,10 @@
 ﻿using MediatR;
-using NextRef.Domain.Core.Ids;
+using NextRef.Application.UserCollections.Models;
 using NextRef.Domain.UserCollections.Models;
 using NextRef.Domain.UserCollections.Repositories;
 
 namespace NextRef.Application.UserCollections.Commands.AddContentToCollection;
-internal class AddContentToCollectionCommandHandler : IRequestHandler<AddContentToCollectionCommand, UserCollectionItemId>
+internal class AddContentToCollectionCommandHandler : IRequestHandler<AddContentToCollectionCommand, UserCollectionItemDto>
 {
     private readonly IUserCollectionItemRepository _userCollectionItemRepository;
     private readonly IUserCollectionRepository _userCollectionRepository;
@@ -14,7 +14,7 @@ internal class AddContentToCollectionCommandHandler : IRequestHandler<AddContent
         _userCollectionItemRepository = userCollectionItemRepository;
         _userCollectionRepository = userCollectionRepository;
     }
-    public async Task<UserCollectionItemId> Handle(AddContentToCollectionCommand request, CancellationToken cancellationToken)
+    public async Task<UserCollectionItemDto> Handle(AddContentToCollectionCommand request, CancellationToken cancellationToken)
     {
         var collection = await _userCollectionRepository.GetByIdAsync(request.UserCollectionId, cancellationToken);
 
@@ -28,6 +28,6 @@ internal class AddContentToCollectionCommandHandler : IRequestHandler<AddContent
 
         await _userCollectionItemRepository.AddAsync(collectionItem, cancellationToken);
 
-        return collectionItem.Id;
+        return UserCollectionItemDto.FromDomain(collectionItem);
     }
 }

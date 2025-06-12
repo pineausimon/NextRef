@@ -1,13 +1,13 @@
 ﻿using MediatR;
 using NextRef.Application.Caching;
+using NextRef.Application.Contents.Models;
 using NextRef.Application.Contents.Services;
 using NextRef.Domain.Contents.Models;
 using NextRef.Domain.Contents.Repositories;
-using NextRef.Domain.Core.Ids;
 
 namespace NextRef.Application.Contents.Commands.CreateContent;
 
-internal class CreateContentHandler : IRequestHandler<CreateContentCommand, ContentId>
+internal class CreateContentHandler : IRequestHandler<CreateContentCommand, ContentDto>
 {
     private readonly IContentRepository _repository;
     private readonly IContributionService _contributionService;
@@ -20,7 +20,7 @@ internal class CreateContentHandler : IRequestHandler<CreateContentCommand, Cont
         _cacheService = cacheService;
     }
 
-    public async Task<ContentId> Handle(CreateContentCommand request, CancellationToken cancellationToken)
+    public async Task<ContentDto> Handle(CreateContentCommand request, CancellationToken cancellationToken)
     {
         var content = Content.Create(request.Title, request.Type, request.PublishedAt, request.Description);
         await _repository.AddAsync(content, cancellationToken);
@@ -31,6 +31,6 @@ internal class CreateContentHandler : IRequestHandler<CreateContentCommand, Cont
 
         await _cacheService.RemoveByPatternAsync("content_search:*");
 
-        return content.Id;
+        return ContentMapper.ToDto(content);
     }
 }

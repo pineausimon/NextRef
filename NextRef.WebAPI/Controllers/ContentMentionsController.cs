@@ -18,7 +18,7 @@ public class ContentMentionsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateContentMentionCommand command)
     {
-        var newId = await _mediator.Send(command);
-        return CreatedAtAction(nameof(Create), new { id = newId }, new { id = newId });
+        var newMention = await _mediator.Send(command);
+        return CreatedAtAction(nameof(Create), new { id = newMention.Id }, newMention);
     }
 }

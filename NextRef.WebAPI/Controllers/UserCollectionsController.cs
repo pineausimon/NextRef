@@ -30,15 +30,15 @@ public class UserCollectionsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateCollectionCommand command)
     {
-        var newId = await _mediator.Send(command);
-        return CreatedAtAction(nameof(Create), new { id = newId }, new { id = newId });
+        var newCollection = await _mediator.Send(command);
+        return CreatedAtAction(nameof(Create), new { id = newCollection.Id }, newCollection);
     }
 
     [Authorize(Policy = "UserOrAdmin")]
     [HttpPost("{collectionId}/items")]
     public async Task<IActionResult> AddContentToCollection(Guid collectionId, AddContentToCollectionCommand command)
     {
-        var newId = await _mediator.Send(command);
-        return CreatedAtAction(nameof(AddContentToCollection), new { id = newId }, new { id = newId });
+        var newItem = await _mediator.Send(command);
+        return CreatedAtAction(nameof(AddContentToCollection), new { id = newItem.Id }, newItem);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Moq;
 using NextRef.Application.Contents.Commands.CreateContentMention;
+using NextRef.Application.Contents.Models;
 using NextRef.Domain.Contents.Models;
 using NextRef.Domain.Contents.Repositories;
 using NextRef.Domain.Core.Ids;
@@ -39,11 +40,10 @@ public class CreateContentMentionHandlerTests
         // Assert
         _contentMentionRepositoryMock.Verify(r => r.AddAsync(It.IsAny<ContentMention>(), CancellationToken.None), Times.Once);
 
-        Assert.NotEqual(Guid.Empty, result.Value);
         Assert.NotNull(savedMention);
-        Assert.Equal(result, savedMention!.Id);
         Assert.Equal(sourceId, savedMention.SourceContentId);
         Assert.Equal(targetId, savedMention.TargetContentId);
         Assert.Equal(context, savedMention.Context);
+        Assert.Equal(result, ContentMentionDto.FromDomain(savedMention));
     }
 }

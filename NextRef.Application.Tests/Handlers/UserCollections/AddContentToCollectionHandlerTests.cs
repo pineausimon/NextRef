@@ -1,5 +1,6 @@
 ﻿using Moq;
 using NextRef.Application.UserCollections.Commands.AddContentToCollection;
+using NextRef.Application.UserCollections.Models;
 using NextRef.Domain.Core.Ids;
 using NextRef.Domain.UserCollections.Models;
 using NextRef.Domain.UserCollections.Repositories;
@@ -88,6 +89,6 @@ public class AddContentToCollectionCommandHandlerTests
         Assert.NotNull(addedItem);
         Assert.Equal(collectionId, addedItem!.CollectionId);
         Assert.Equal(contentId, addedItem.ContentId);
-        Assert.Equal(result, addedItem.Id);
+        Assert.Equal(result, UserCollectionItemDto.FromDomain(addedItem));
     }
 }

@@ -43,25 +43,19 @@ public class ContentsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateContentCommand command)
     {
-        var newId = await _mediator.Send(command);
-        return CreatedAtAction(nameof(Create), new { id = newId }, new { id = newId });
+        var newContent = await _mediator.Send(command);
+        return CreatedAtAction(nameof(Create), new { id = newContent.Id }, newContent);
     }
 
     [Authorize(Policy = "UserOrAdmin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, UpdateContentCommand command)
     {
-        if ((ContentId) id != command.Id) return BadRequest("ID mismatch");
+        if ((ContentId) id != command.Id) 
+            return BadRequest("ID mismatch");
 
-        try
-        {
-            await _mediator.Send(command);
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound();
-        }
-        return NoContent();
+        var updatedContent = await _mediator.Send(command);
+        return Ok(updatedContent);
     }
 
     [Authorize(Roles = UserRoles.Admin)]

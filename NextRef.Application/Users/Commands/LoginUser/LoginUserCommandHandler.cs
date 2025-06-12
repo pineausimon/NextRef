@@ -16,7 +16,7 @@ internal class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, strin
         var signInSuccess = await _userAuthService.CheckPasswordSignInAsync(request.UserName, request.Password, false);
 
         if (!signInSuccess)
-            throw new UnauthorizedAccessException("Invalid credentials");
+            return null;
 
         var token = await _userAuthService.GenerateTokenForUserAsync(request.UserName);
 

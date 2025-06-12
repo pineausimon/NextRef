@@ -54,7 +54,6 @@ public class CreateContentHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        Assert.NotEqual(Guid.Empty, result.Value);
         Assert.NotNull(createdContent);
         Assert.Equal(command.Title, createdContent!.Title);
         Assert.Equal(command.Type, createdContent.Type);
@@ -93,7 +92,6 @@ public class CreateContentHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        Assert.NotEqual(Guid.Empty, result.Value);
         _contentRepositoryMock.Verify(r => r.AddAsync(It.IsAny<Content>(), CancellationToken.None), Times.Once);
         _contributionServiceMock.Verify(s => s.AddContributionsAsync(
             It.IsAny<ContentId>(),

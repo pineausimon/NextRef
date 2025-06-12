@@ -41,7 +41,7 @@ public class LoginUserHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldThrowUnauthorizedAccessException_WhenLoginFails()
+    public async Task Handle_ShouldReturnNullToken_WhenLoginFails()
     {
         // Arrange
         var command = new LoginUserCommand("user1", "wrongpass");
@@ -50,8 +50,11 @@ public class LoginUserHandlerTests
             .Setup(s => s.CheckPasswordSignInAsync(command.UserName, command.Password, false))
             .ReturnsAsync(false);
 
-        // Act & Assert
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _handler.Handle(command, CancellationToken.None));
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.Null(result);
 
         _userAuthServiceMock.Verify(s => s.CheckPasswordSignInAsync(command.UserName, command.Password, false), Times.Once);
         _userAuthServiceMock.Verify(s => s.GenerateTokenForUserAsync(It.IsAny<string>()), Times.Never);
