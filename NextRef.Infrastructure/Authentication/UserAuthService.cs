@@ -21,7 +21,7 @@ public class UserAuthService : IUserAuthService
         var user = await _userManager.FindByNameAsync(userName);
 
         if (user == null)
-            throw new UnauthorizedAccessException("Invalid credentials");
+            return false;
 
         var signInResult = await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure);
         return signInResult.Succeeded;
