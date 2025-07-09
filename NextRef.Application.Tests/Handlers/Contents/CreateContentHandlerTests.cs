@@ -1,8 +1,8 @@
 ﻿using Moq;
 using NextRef.Application.Caching;
-using NextRef.Application.Contents.Commands.CreateContent;
-using NextRef.Application.Contents.Models;
-using NextRef.Application.Contents.Services;
+using NextRef.Application.Features.Contents.Commands.CreateContent;
+using NextRef.Application.Features.Contents.Models;
+using NextRef.Application.Features.Contents.Services;
 using NextRef.Domain.Contents.Models;
 using NextRef.Domain.Contents.Repositories;
 using NextRef.Domain.Core.Ids;

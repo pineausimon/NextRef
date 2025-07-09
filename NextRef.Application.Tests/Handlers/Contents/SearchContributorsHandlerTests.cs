@@ -1,6 +1,6 @@
 ﻿using Moq;
-using NextRef.Application.Contributors.Models;
-using NextRef.Application.Contributors.Queries.SearchContributors;
+using NextRef.Application.Features.Contributors.Models;
+using NextRef.Application.Features.Contributors.Queries.SearchContributors;
 using NextRef.Domain.Contents.Models;
 using NextRef.Domain.Contents.Repositories;
 using NextRef.Domain.Core.Ids;

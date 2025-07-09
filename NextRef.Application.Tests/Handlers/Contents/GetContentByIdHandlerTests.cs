@@ -1,10 +1,10 @@
 ﻿using Moq;
-using NextRef.Application.Contents.Models;
-using NextRef.Application.Contents.Queries.GetContentById;
+using NextRef.Application.Features.Contents.Models;
 using NextRef.Domain.Contents.Models;
 using NextRef.Domain.Contents.Repositories;
 using FluentAssertions;
 using NextRef.Domain.Core.Ids;
+using NextRef.Application.Features.Contents.Queries.GetContentById;
 
 namespace NextRef.Application.Tests.Handlers.Contents;
 public class GetContentByIdHandlerTests

@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Moq;
 using NextRef.Application.Caching;
-using NextRef.Application.Contents.Commands.DeleteContent;
+using NextRef.Application.Features.Contents.Commands.DeleteContent;
 using NextRef.Domain.Contents.Repositories;
 using NextRef.Domain.Core.Ids;
 

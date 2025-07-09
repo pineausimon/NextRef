@@ -1,6 +1,6 @@
 ﻿using Moq;
-using NextRef.Application.Contents.Commands.CreateContentMention;
-using NextRef.Application.Contents.Models;
+using NextRef.Application.Features.Contents.Commands.CreateContentMention;
+using NextRef.Application.Features.Contents.Models;
 using NextRef.Domain.Contents.Models;
 using NextRef.Domain.Contents.Repositories;
 using NextRef.Domain.Core.Ids;

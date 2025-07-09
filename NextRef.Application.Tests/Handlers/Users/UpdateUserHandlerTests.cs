@@ -1,5 +1,5 @@
 ﻿using Moq;
-using NextRef.Application.Users.Commands.UpdateUser;
+using NextRef.Application.Features.Users.Commands.UpdateUser;
 using NextRef.Domain.Core.Ids;
 using NextRef.Domain.Users;
 

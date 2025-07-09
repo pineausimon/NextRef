@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NextRef.Application.Contents.Commands.CreateContentMention;
+using NextRef.Application.Features.Contents.Commands.CreateContentMention;
 
 namespace NextRef.WebAPI.Controllers;
 [Route("api/[controller]")]

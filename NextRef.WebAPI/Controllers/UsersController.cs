@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NextRef.Application.Users.Commands.LoginUser;
-using NextRef.Application.Users.Commands.RegisterUser;
-using NextRef.Application.Users.Commands.UpdateUser;
-using NextRef.Application.Users.Queries.GetUser;
+using NextRef.Application.Features.Users.Commands.LoginUser;
+using NextRef.Application.Features.Users.Commands.RegisterUser;
+using NextRef.Application.Features.Users.Commands.UpdateUser;
+using NextRef.Application.Features.Users.Queries.GetUser;
 using NextRef.Domain.Core.Ids;
 
 namespace NextRef.WebAPI.Controllers;

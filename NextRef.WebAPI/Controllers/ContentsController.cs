@@ -1,11 +1,11 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NextRef.Application.Contents.Commands.CreateContent;
-using NextRef.Application.Contents.Commands.DeleteContent;
-using NextRef.Application.Contents.Commands.UpdateContent;
-using NextRef.Application.Contents.Queries.GetContentById;
-using NextRef.Application.Contents.Queries.SearchContents;
+using NextRef.Application.Features.Contents.Commands.DeleteContent;
+using NextRef.Application.Features.Contents.Queries.GetContentById;
+using NextRef.Application.Features.Contents.Commands.CreateContent;
+using NextRef.Application.Features.Contents.Commands.UpdateContent;
+using NextRef.Application.Features.Contents.Queries.SearchContents;
 using NextRef.Domain.Core;
 using NextRef.Domain.Core.Ids;
 

@@ -1,9 +1,9 @@
 ﻿using Moq;
-using NextRef.Application.Contents.Commands.UpdateContent;
 using NextRef.Domain.Contents.Repositories;
 using NextRef.Application.Caching;
 using NextRef.Domain.Contents.Models;
 using NextRef.Domain.Core.Ids;
+using NextRef.Application.Features.Contents.Commands.UpdateContent;
 
 namespace NextRef.Application.Tests.Handlers.Contents;
 public class UpdateContentHandlerTests

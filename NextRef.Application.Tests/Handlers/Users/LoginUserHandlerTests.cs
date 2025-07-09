@@ -1,6 +1,6 @@
 ﻿using Moq;
-using NextRef.Application.Users.Commands.LoginUser;
-using NextRef.Application.Users.Services;
+using NextRef.Application.Features.Users.Commands.LoginUser;
+using NextRef.Application.Features.Users.Services;
 
 namespace NextRef.Application.Tests.Handlers.Users;
 public class LoginUserHandlerTests

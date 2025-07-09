@@ -1,9 +1,9 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NextRef.Application.UserCollections.Commands.AddContentToCollection;
-using NextRef.Application.UserCollections.Commands.CreateCollection;
-using NextRef.Application.UserCollections.Queries.GetUserCollections;
+using NextRef.Application.Features.UserCollections.Commands.AddContentToCollection;
+using NextRef.Application.Features.UserCollections.Commands.CreateCollection;
+using NextRef.Application.Features.UserCollections.Queries.GetUserCollections;
 using NextRef.Domain.Core.Ids;
 
 namespace NextRef.WebAPI.Controllers;

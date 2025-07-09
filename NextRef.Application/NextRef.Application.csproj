@@ -25,4 +25,8 @@
 			<_Parameter1>NextRef.Application.Tests</_Parameter1>
 		</AssemblyAttribute>
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Features\Contents\Queries\GetContentMentions\" />
+	</ItemGroup>
 </Project>

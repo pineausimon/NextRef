@@ -1,9 +1,9 @@
 ﻿using Moq;
-using NextRef.Application.Contents.Queries.SearchContents;
-using NextRef.Application.Contents.Models;
 using NextRef.Domain.Contents.Repositories;
 using NextRef.Application.Caching;
 using NextRef.Domain.Contents.Models;
+using NextRef.Application.Features.Contents.Models;
+using NextRef.Application.Features.Contents.Queries.SearchContents;
 
 
 namespace NextRef.Application.Tests.Handlers.Contents;

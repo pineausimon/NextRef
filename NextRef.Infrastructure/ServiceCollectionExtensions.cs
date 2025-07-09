@@ -9,9 +9,9 @@ using NextRef.Infrastructure.DataAccess.Repositories;
 using NextRef.Infrastructure.Authentication;
 using NextRef.Domain.Contents.Repositories;
 using NextRef.Domain.UserCollections.Repositories;
-using NextRef.Application.Users.Services;
 using NextRef.Infrastructure.Caching.Redis;
 using StackExchange.Redis;
+using NextRef.Application.Features.Users.Services;
 
 namespace NextRef.Infrastructure;
 

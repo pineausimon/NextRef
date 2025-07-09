@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using NextRef.Application.Behaviors;
-using NextRef.Application.Contents.Commands.CreateContent;
-using NextRef.Application.Contents.Services;
+using NextRef.Application.Features.Contents.Commands.CreateContent;
+using NextRef.Application.Features.Contents.Services;
 
 namespace NextRef.Application;
 public static class ServiceCollectionExtensions
@@ -11,6 +11,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddValidatorsFromAssemblyContaining<CreateContentCommandValidator>();
 
+        // Register MediatR and behaviors
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssemblyContaining<CreateContentCommand>();

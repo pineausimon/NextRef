@@ -1,5 +1,5 @@
 ﻿using Moq;
-using NextRef.Application.UserCollections.Queries.GetUserCollections;
+using NextRef.Application.Features.UserCollections.Queries.GetUserCollections;
 using NextRef.Domain.Core.Ids;
 using NextRef.Domain.UserCollections.Models;
 using NextRef.Domain.UserCollections.Repositories;

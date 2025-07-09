@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using NextRef.Application.Users.Models;
-using NextRef.Application.Users.Services;
+using NextRef.Application.Features.Users.Models;
+using NextRef.Application.Features.Users.Services;
 
 namespace NextRef.Infrastructure.Authentication;
 public class UserAuthService : IUserAuthService

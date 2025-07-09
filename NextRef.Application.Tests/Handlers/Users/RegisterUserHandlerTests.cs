@@ -1,9 +1,9 @@
 ﻿using Moq;
-using NextRef.Application.Users.Commands.RegisterUser;
 using NextRef.Domain.Users;
-using NextRef.Application.Users.Models;
-using NextRef.Application.Users.Services;
+using NextRef.Application.Features.Users.Models;
 using NextRef.Domain.Core;
+using NextRef.Application.Features.Users.Services;
+using NextRef.Application.Features.Users.Commands.RegisterUser;
 
 namespace NextRef.Application.Tests.Handlers.Users;
 public class RegisterUserHandlerTests

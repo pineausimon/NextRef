@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NextRef.Application.Contributors.Queries.SearchContributors;
+using NextRef.Application.Features.Contributors.Queries.SearchContributors;
 
 namespace NextRef.WebAPI.Controllers;
 [Route("api/[controller]")]

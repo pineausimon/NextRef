@@ -1,5 +1,5 @@
 ﻿using Moq;
-using NextRef.Application.Users.Queries.GetUser;
+using NextRef.Application.Features.Users.Queries.GetUser;
 using NextRef.Domain.Core.Ids;
 using NextRef.Domain.Users;
 

@@ -1,6 +1,6 @@
 ﻿using Moq;
-using NextRef.Application.UserCollections.Commands.AddContentToCollection;
-using NextRef.Application.UserCollections.Models;
+using NextRef.Application.Features.UserCollections.Commands.AddContentToCollection;
+using NextRef.Application.Features.UserCollections.Models;
 using NextRef.Domain.Core.Ids;
 using NextRef.Domain.UserCollections.Models;
 using NextRef.Domain.UserCollections.Repositories;
